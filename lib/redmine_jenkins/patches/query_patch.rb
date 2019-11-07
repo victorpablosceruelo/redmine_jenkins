@@ -5,7 +5,8 @@ module RedmineJenkins
     module QueryPatch
 
       def self.included(base)
-        base.send(:include, InstanceMethods)
+#        base.send(:include, InstanceMethods)
+#        base.send(:include)
         base.class_eval do
           unloadable
 
