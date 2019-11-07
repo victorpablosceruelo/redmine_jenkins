@@ -12,12 +12,14 @@ module RedmineJenkins
           helper :jenkins
           helper :redmine_bootstrap_kit
 
-          alias_method_chain :settings, :redmine_jenkins
+          # alias_method_chain :settings, :redmine_jenkins
+	  alias_method :settings_without_redmine_jenkins, :settings
+	  alias_method :settings, :settings_with_redmine_jenkins
         end
       end
 
 
-      module InstanceMethods
+#      module InstanceMethods
 
         def settings_with_redmine_jenkins(&block)
           settings_without_redmine_jenkins(&block)
@@ -30,7 +32,7 @@ module RedmineJenkins
           end
         end
 
-      end
+#      end
 
     end
   end
