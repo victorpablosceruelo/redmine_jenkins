@@ -1,9 +1,13 @@
 source 'https://rubygems.org'
 
-gem 'jenkins_api_client', '~> 1.3.0'
+gem 'jenkins_api_client', '> 1.3.0'
 
 # HAML views
 gem 'haml-rails'
+
+gem 'devise'
+# , git: 'https://github.com/gogovan/devise.git', branch: 'rails-5.1'
+gem 'erubis'
 
 group :development, :test do
   gem 'rspec', '~> 3.0.0'
@@ -19,7 +23,7 @@ group :development, :test do
   gem 'database_cleaner'
 
   # Code coverage
-  gem 'simplecov', '~> 0.9.1'
+  gem 'simplecov', '~> 0.14.1'
   gem 'simplecov-rcov'
 
   # Junit results
