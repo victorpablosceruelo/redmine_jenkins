@@ -9,6 +9,9 @@ gem 'devise'
 # , git: 'https://github.com/gogovan/devise.git', branch: 'rails-5.1'
 gem 'erubis'
 
+# No: gem 'protected_attributes'
+gem 'protected_attributes_continued'
+
 group :development, :test do
   gem 'rspec', '~> 3.0.0'
   gem 'rspec-rails', '~> 3.0.1'
