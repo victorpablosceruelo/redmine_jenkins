@@ -1,4 +1,5 @@
 require 'jenkins_api_client'
+require 'logger'
 
 class JenkinsClient
 
@@ -11,6 +12,12 @@ class JenkinsClient
     @options[:http_read_timeout] = opts[:http_read_timeout] || 60
     @options[:username] = opts[:username] if opts.has_key?(:username)
     @options[:password] = opts[:password] if opts.has_key?(:password)
+
+    @log_location = STDOUT unless @log_location
+    @log_level = Logger::INFO unless @log_level
+    @logger = Logger.new(@log_location)
+    @logger.level = @log_level
+
   end
 
 
@@ -44,7 +51,20 @@ class JenkinsClient
 
 
   def get_jobs_list
-    connection.job.list_all rescue []
+    response_json_jobs = connection.job.list_all_with_details rescue []
+    jobs = []
+    response_json_jobs.each do |job|
+      @logger.info "Details for job '#{job["name"]}':"
+      @logger.info "'#{job}'"
+      if job["_class"] == "com.cloudbees.hudson.plugins.folder.Folder"
+        details_response_json = connection.job.list_details job["name"]
+        @logger.info "Job is a folder. Details: "
+        @logger.info "'#{details_response_json}'"
+      end
+      jobs << job["name"] 
+    end
+    # connection.job.list_all rescue []
+    jobs
   end
 
 
