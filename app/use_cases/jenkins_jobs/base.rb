@@ -1,3 +1,5 @@
+require 'logger'
+
 module JenkinsJobs
   class Base
 
@@ -14,6 +16,12 @@ module JenkinsJobs
       @job_data    = nil
       @errors      = []
       @use_case    = self.class.name.split('::').last.underscore
+
+      @log_location = STDOUT unless @log_location
+      @log_level = Logger::INFO unless @log_level
+      @logger = Logger.new(@log_location)
+      @logger.level = @log_level
+
     end
 
 
@@ -148,7 +156,7 @@ module JenkinsJobs
 
       def get_jenkins_job_details
         begin
-          data = jenkins_client.job.list_details(jenkins_job.name)
+          data = jenkins_client.job.list_details(jenkins_job.name2url)
         rescue => e
           @errors << e.message
         else
@@ -159,7 +167,7 @@ module JenkinsJobs
 
       def get_jenkins_build_details(build_number)
         begin
-          data = jenkins_client.job.get_build_details(jenkins_job.name, build_number)
+          data = jenkins_client.job.get_build_details(jenkins_job.name2url, build_number)
         rescue => e
           @errors << e.message
           nil

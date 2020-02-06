@@ -32,9 +32,12 @@ class JenkinsJob < ActiveRecord::Base
 
 
   def url
-    "#{jenkins_url}/job/#{name}"
+    "#{jenkins_url}/job/" + name2url
   end
 
+  def name2url
+    name.gsub('/', '/job/')
+  end
 
   def latest_build_url
     "#{url}/#{latest_build_number}"
@@ -44,7 +47,7 @@ class JenkinsJob < ActiveRecord::Base
   def console
     console_output =
       begin
-        jenkins_connection.job.get_console_output(name, latest_build_number)['output'].gsub('\r\n', '<br />')
+        jenkins_connection.job.get_console_output(name2url, latest_build_number)['output'].gsub('\r\n', '<br />')
       rescue => e
         e.message
       end

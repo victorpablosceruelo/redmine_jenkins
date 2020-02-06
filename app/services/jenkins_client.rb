@@ -52,24 +52,50 @@ class JenkinsClient
 
   def get_jobs_list
     response_json_jobs = connection.job.list_all_with_details rescue []
-    jobs = []
-    response_json_jobs.each do |job|
-      @logger.info "Details for job '#{job["name"]}':"
-      @logger.info "'#{job}'"
-      if job["_class"] == "com.cloudbees.hudson.plugins.folder.Folder"
-        details_response_json = connection.job.list_details job["name"]
-        @logger.info "Job is a folder. Details: "
-        @logger.info "'#{details_response_json}'"
-      end
-      jobs << job["name"] 
-    end
+    jobs = get_jobs_list_aux(response_json_jobs, '', [])
     # connection.job.list_all rescue []
     jobs
   end
 
+  def get_jobs_list_aux(response_jobs_json, prefix, jobs_accumulator)
+    response_jobs_json.each do |job|
+      job_name = job["name"]
+      new_prefix = compute_new_prefix(prefix, job_name)
+
+      @logger.info "get_jobs_list: If isFolder('#{job["name"]}') -> getSubfolders "
+      @logger.info "'#{job}'"
+
+
+      if job["_class"] == "com.cloudbees.hudson.plugins.folder.Folder"
+        job_suburl = name2url(new_prefix)
+        @logger.info "Job is a folder. Getting details of folder '#{new_prefix}' ('#{job_suburl}'): "
+        details_response_json = connection.job.list_details(job_suburl)
+        @logger.info "'#{details_response_json}'"
+        
+        jobs_accumulator = get_jobs_list_aux(details_response_json["jobs"], new_prefix, jobs_accumulator) rescue jobs_accumulator
+      else
+        jobs_accumulator << compute_new_prefix(prefix, job_name)
+      end
+    end
+    jobs_accumulator
+  end
+
+  def compute_new_prefix(prefix, job_name)
+    if '' == prefix
+      new_prefix = job_name
+    else
+      new_prefix = prefix + '/' + job_name
+    end
+    new_prefix
+  end
+
+  def name2url(job_name)
+    job_name.gsub('/', '/job/')
+  end
 
   def number_of_builds_for(job_name)
-    connection.job.list_details(job_name)['builds'].size rescue 0
+    job_suburl = name2url(job_name)
+    connection.job.list_details(job_suburl)['builds'].size rescue 0
   end
 
 end
