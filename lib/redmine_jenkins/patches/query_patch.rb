@@ -5,25 +5,18 @@ module RedmineJenkins
     module QueryPatch
 
       def self.included(base)
-#        base.send(:include, InstanceMethods)
-#        base.send(:include)
+        base.send(:include, InstanceMethods)
         base.class_eval do
           unloadable
 
-          # alias_method_chain :available_filters, :redmine_jenkins
-          alias_method :available_filters_without_redmine_jenkins, :available_filters
-          alias_method :available_filters, :available_filters_with_redmine_jenkins
-
-          # alias_method_chain :sql_for_field,     :redmine_jenkins
-          alias_method :sql_for_field_without_redmine_jenkins, :sql_for_field
-          alias_method :sql_for_field, :sql_for_field_with_redmine_jenkins
-
+          alias_method_chain :available_filters, :redmine_jenkins
+          alias_method_chain :sql_for_field,     :redmine_jenkins
         end
 
       end
 
 
-#      module InstanceMethods
+      module InstanceMethods
 
         def available_filters_with_redmine_jenkins
           return @available_filters if @available_filters
@@ -211,7 +204,7 @@ module RedmineJenkins
           return retval
         end
 
-#      end
+      end
 
     end
   end

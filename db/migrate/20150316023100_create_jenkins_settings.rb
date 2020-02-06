@@ -1,4 +1,4 @@
-class CreateJenkinsSettings < ActiveRecord::Migration[5.0]
+class CreateJenkinsSettings < ActiveRecord::Migration
 
   def change
     create_table :jenkins_settings do |t|
