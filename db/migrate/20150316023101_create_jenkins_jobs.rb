@@ -1,4 +1,4 @@
-class CreateJenkinsJobs < ActiveRecord::Migration[5.0]
+class CreateJenkinsJobs < ActiveRecord::Migration
 
   def change
     create_table :jenkins_jobs do |t|

@@ -1,4 +1,4 @@
-class CreateJenkinsTestResults < ActiveRecord::Migration[5.0]
+class CreateJenkinsTestResults < ActiveRecord::Migration
 
   def change
     create_table :jenkins_test_results do |t|
