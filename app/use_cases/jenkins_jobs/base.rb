@@ -115,8 +115,12 @@ module JenkinsJobs
 
 
       def update_build(build, build_number)
+        @logger.info "update_build: Updating build information for build number '#{build_number}'"
+
         ## Get BuildDetails from Jenkins
         build_details = get_jenkins_build_details(build_number)
+
+        @logger.info "update_build: build_details: '#{build_details}'"
 
         ## Update the AR object with new data
         build.result      = build_details['result'].nil? ? 'running' : build_details['result']
@@ -126,7 +130,9 @@ module JenkinsJobs
         build.save!
 
         ## Update changesets
-        create_changeset(build, build_details['changeSet']['items'])
+        changeSet = build_details['changeSet']
+        changeSetItems = changeSet['items']
+        create_changeset(build, changeSetItems)
       end
 
 
