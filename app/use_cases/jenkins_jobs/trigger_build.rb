@@ -7,7 +7,10 @@ module JenkinsJobs
       opts['build_start_timeout'] = 30 if jenkins_job.wait_for_build_id
 
       begin
-        build_number = jenkins_client.job.build(jenkins_job.name2url, {}, opts)
+        jenkins_job_url = jenkins_job.name2url
+        @logger.info "Jenkins job suburl: '#{jenkins_job_url}' "
+        @logger.info "Jenkins job opts: '#{opts}' "
+        build_number = jenkins_client.job.build(jenkins_job_url, {}, opts)
       rescue => e
         @errors << e.message
         @logger.error e.message

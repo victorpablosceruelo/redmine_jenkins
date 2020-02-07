@@ -129,10 +129,18 @@ module JenkinsJobs
         build.finished_at = Time.at(build_details['timestamp'].to_f / 1000)
         build.save!
 
-        ## Update changesets
-        changeSet = build_details['changeSet']
-        changeSetItems = changeSet['items']
-        create_changeset(build, changeSetItems)
+        ## Update changesets. Be careful: sometimes the answer does not have them ... 
+        if (build_details['changeSet'] == nil)
+          @logger.warn "Could not create changeSet: changeSet not available in Jenkins response."
+        else
+          changeSet = build_details['changeSet']
+          if (changeSet['items'] == nil)
+            @logger.warn "Could not create changeSet: changeSetItems not available in Jenkins response."
+          else
+            changeSetItems = changeSet['items']
+            create_changeset(build, changeSetItems)
+          end
+        end
       end
 
 
