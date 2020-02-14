@@ -12,8 +12,9 @@ module JenkinsJobs
         @logger.info "Jenkins job opts: '#{opts}' "
         build_number = jenkins_client.job.build(jenkins_job_url, {}, opts)
       rescue => e
-        @errors << e.message
-        @logger.error e.message
+        errorMsg = "Jenkins Response: " + e.message
+        @errors << errorMsg
+        @logger.error errorMsg
         @logger.error e.backtrace.join("\n")
       else
         jenkins_job.latest_build_number = build_number if jenkins_job.wait_for_build_id

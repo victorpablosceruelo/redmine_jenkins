@@ -110,7 +110,7 @@ module JenkinsJobs
         build.save!
 
         ## Update changesets
-        create_changeset(build, build_details['changeSet']['items'])
+        create_changeset_if_possible(build, build_details)
       end
 
 
@@ -129,20 +129,28 @@ module JenkinsJobs
         build.finished_at = Time.at(build_details['timestamp'].to_f / 1000)
         build.save!
 
+        ## Update changesets. 
+        create_changeset_if_possible(build, build_details)
+      end
+
+      def create_changeset_if_possible(build, build_details)
         ## Update changesets. Be careful: sometimes the answer does not have them ... 
         if (build_details['changeSet'] == nil)
-          @logger.warn "Could not create changeSet: changeSet not available in Jenkins response."
+          errorMsg = "Could not create changeSet: changeSet not available in Jenkins response."
+          @logger.warn errorMsg
+          @errors << errorMsg
         else
           changeSet = build_details['changeSet']
           if (changeSet['items'] == nil)
-            @logger.warn "Could not create changeSet: changeSetItems not available in Jenkins response."
+            errorMsg = "Could not create changeSet: changeSetItems not available in Jenkins response."
+            @logger.warn errorMsg
+            @errors << errorMsg
           else
             changeSetItems = changeSet['items']
             create_changeset(build, changeSetItems)
           end
         end
       end
-
 
       def clean_up_builds
         jenkins_job.builds.first(number_of_builds_to_delete).map(&:destroy) if too_much_builds?
