@@ -73,11 +73,33 @@ module JenkinsJobs
         jenkins_job.latest_build_number   = !job_data['lastBuild'].nil? ? job_data['lastBuild']['number'] : 0
         jenkins_job.latest_build_date     = jenkins_job.builds.last.finished_at rescue ''
         jenkins_job.latest_build_duration = jenkins_job.builds.last.duration rescue ''
+        jenkins_job.sonarqubeDashboardUrl = getSonarqubeDashboardUrl()
         jenkins_job.save!
         jenkins_job.reload
         true
       end
 
+      def getSonarqubeDashboardUrl()
+        begin
+          job_data.each do |job_subdata|
+            if ! (job_subdata.nil?) 
+              if ! (job_subdata['_class'].nil?)
+                if (job_subdata['_class'] == 'hudson.plugins.sonar.action.SonarAnalysisAction')
+                  sonarqubeDashboardUrl = job_subdata['sonarqubeDashboardUrl']
+                  @logger.info "sonarqubeDashboardUrl: '#{sonarqubeDashboardUrl}'"
+                  return sonarqubeDashboardUrl
+                end
+              end
+            end 
+          end
+        rescue => e
+          errorMsg = "getSonarqubeDashboardUrl: " + e.message
+          @errors << errorMsg
+          @logger.error errorMsg
+          @logger.error e.backtrace.join("\n")
+        end
+        return ''
+      end
 
       def do_create_builds(builds, update = false)
         builds.reverse.each do |build_data|
