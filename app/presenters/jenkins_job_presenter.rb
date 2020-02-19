@@ -22,13 +22,22 @@ class JenkinsJobPresenter < SimpleDelegator
 
 
   def latest_build_infos
-    content_tag(:span, link_to_jenkins_job(jenkins_job), class: 'label label-info') +
-    content_tag(:em, latest_build_date)
+    content_tag(:ul, render_latest_build_infos, class: 'list-unstyled')
+  end
+
+  
+  def render_latest_build_infos
+    content_tag(:li, job_state) +
+    content_tag(:li, latest_build_date) +
+    content_tag(:li, latest_build_duration) +
+    content_tag(:li, link_to_sonarqube_dashboard_url(jenkins_job.sonarqube_dashboard_url).html_safe)
   end
 
 
   def job_state
     s = ''
+    s << content_tag(:span, link_to_jenkins_job(jenkins_job).html_safe, class: 'label label-info')
+    s << l(:label_job_state) + ": " 
     s << content_tag(:span, link_to_console_output, class: "label label-#{state_to_css_class(jenkins_job.state)}")
     s << content_tag(:span, '', class: 'icon icon-running') if jenkins_job.state == 'running'
     s.html_safe
@@ -36,9 +45,12 @@ class JenkinsJobPresenter < SimpleDelegator
 
 
   def latest_build_duration
-    Time.at(jenkins_job.latest_build_duration/1000).strftime "%M:%S" rescue "00:00"
+    l(:label_job_duration) + latest_build_duration_time
   end
 
+  def latest_build_duration_time
+    Time.at(jenkins_job.latest_build_duration/1000).strftime "%M:%S" rescue "00:00"
+  end
 
   def latest_changesets
     changesets = jenkins_job.builds.last.changesets rescue []
@@ -86,7 +98,7 @@ class JenkinsJobPresenter < SimpleDelegator
 
 
     def latest_build_date
-      " (#{format_time(jenkins_job.latest_build_date)})"
+      l(:at) + " (#{format_time(jenkins_job.latest_build_date)})"
     end
 
 

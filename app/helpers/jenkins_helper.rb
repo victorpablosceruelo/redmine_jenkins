@@ -40,6 +40,11 @@ module JenkinsHelper
   end
 
 
+  def link_to_sonarqube_dashboard_url(sonarqube_dashboard_url)
+    link_to l(:label_sonarqube_dashboard_url), sonarqube_dashboard_url, target: 'about_blank'
+  end
+
+
   def render_repo_name(job)
     if job.repository.nil?
       content_tag(:em, 'deleted')

@@ -169,6 +169,10 @@ module JenkinsJobs
           build_details.each do |key, build_detail_array|
             sonarqube_dashboard_url = getSonarqubeDashboardUrlAux(key, build_detail_array)
             if (! ('' == sonarqube_dashboard_url))
+              @logger.info "sonarqubeDashboardUrl: '#{sonarqube_dashboard_url}'"
+              jenkins_job.sonarqube_dashboard_url = sonarqube_dashboard_url
+              jenkins_job.save!
+              jenkins_job.reload
               return sonarqube_dashboard_url
             end
           end
