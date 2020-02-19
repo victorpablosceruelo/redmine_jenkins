@@ -6,7 +6,7 @@ class JenkinsJob < ActiveRecord::Base
   belongs_to :repository
   has_many   :builds, class_name: 'JenkinsBuild', dependent: :destroy
 
-  attr_accessible :name, :repository_id, :builds_to_keep, :sonarqubeDashboardUrl
+  attr_accessible :name, :repository_id, :builds_to_keep, :sonarqube_dashboard_url, :state_color
 
   ## Validations
   validates :project_id,     presence: true

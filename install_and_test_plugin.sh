@@ -1,5 +1,12 @@
 #!/bin/bash
 
+echo "To upgrade database: "
+echo " "
+echo "bundle exec rake redmine:plugins:migrate RAILS_ENV=production NAME=redmine_jenkins "
+echo " "
+echo "bundle exec rake redmine:plugins:migrate RAILS_ENV=production NAME=redmine_jenkins VERSION=20150316023104 "
+echo " "
+
 http_proxy=http://10.254.250.94:3128/
 https_proxy=http://10.254.250.94:3128/
 
@@ -12,6 +19,8 @@ http_proxy=http://10.254.250.94:3128/ https_proxy=http://10.254.250.94:3128/ bun
 popd
 
 pushd /var/www/redmine-4.0/
+
+# bundle exec rake redmine:plugins:migrate RAILS_ENV=production NAME=redmine_jenkins
 
 http_proxy=http://10.254.250.94:3128/ https_proxy=http://10.254.250.94:3128/ bundle update 
 http_proxy=http://10.254.250.94:3128/ https_proxy=http://10.254.250.94:3128/ bundle install

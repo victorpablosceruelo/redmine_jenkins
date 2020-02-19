@@ -68,37 +68,16 @@ module JenkinsJobs
 
       def update_job_status
         jenkins_job.state                 = color_to_state(job_data['color']) || jenkins_job.state
+        jenkins_job.state_color            = job_data['color'] || jenkins_job.state_color
         jenkins_job.description           = job_data['description'] || ''
         jenkins_job.health_report         = job_data['healthReport']
         jenkins_job.latest_build_number   = !job_data['lastBuild'].nil? ? job_data['lastBuild']['number'] : 0
         jenkins_job.latest_build_date     = jenkins_job.builds.last.finished_at rescue ''
         jenkins_job.latest_build_duration = jenkins_job.builds.last.duration rescue ''
-        jenkins_job.sonarqubeDashboardUrl = getSonarqubeDashboardUrl()
+        jenkins_job.sonarqube_dashboard_url = ''
         jenkins_job.save!
         jenkins_job.reload
         true
-      end
-
-      def getSonarqubeDashboardUrl()
-        begin
-          job_data.each do |job_subdata|
-            if ! (job_subdata.nil?) 
-              if ! (job_subdata['_class'].nil?)
-                if (job_subdata['_class'] == 'hudson.plugins.sonar.action.SonarAnalysisAction')
-                  sonarqubeDashboardUrl = job_subdata['sonarqubeDashboardUrl']
-                  @logger.info "sonarqubeDashboardUrl: '#{sonarqubeDashboardUrl}'"
-                  return sonarqubeDashboardUrl
-                end
-              end
-            end 
-          end
-        rescue => e
-          errorMsg = "getSonarqubeDashboardUrl: " + e.message
-          @errors << errorMsg
-          @logger.error errorMsg
-          @logger.error e.backtrace.join("\n")
-        end
-        return ''
       end
 
       def do_create_builds(builds, update = false)
@@ -133,6 +112,10 @@ module JenkinsJobs
 
         ## Update changesets
         create_changeset_if_possible(build, build_details)
+
+        ## Update SonarqubeDashboardUrl
+        getSonarqubeDashboardUrl(build_details)
+
       end
 
 
@@ -153,6 +136,10 @@ module JenkinsJobs
 
         ## Update changesets. 
         create_changeset_if_possible(build, build_details)
+
+        ## Update SonarqubeDashboardUrl
+        getSonarqubeDashboardUrl(build_details)
+
       end
 
       def create_changeset_if_possible(build, build_details)
@@ -173,6 +160,54 @@ module JenkinsJobs
           end
         end
       end
+
+
+      def getSonarqubeDashboardUrl(build_details)
+        begin
+          @logger.info "build_details:"
+          @logger.info build_details
+          build_details.each do |key, build_detail_array|
+            sonarqube_dashboard_url = getSonarqubeDashboardUrlAux(key, build_detail_array)
+            if (! ('' == sonarqube_dashboard_url))
+              return sonarqube_dashboard_url
+            end
+          end
+        rescue => e
+          errorMsg = "getSonarqubeDashboardUrl: " + e.message
+          @errors << errorMsg
+          @logger.error errorMsg
+          @logger.error e.backtrace.join("\n")
+        end
+        return ''
+      end
+
+
+      def getSonarqubeDashboardUrlAux(key, build_detail_array)
+        begin
+          if (! (key == nil)) && (key == 'actions')
+            @logger.info "build_detail_array: '#{build_detail_array}'"
+            build_detail_array.each do |build_detail|
+              @logger.info "build_detail: '#{build_detail}'"
+              if ((! (build_detail == nil)) && (! (build_detail['_class'] == nil)))
+                if (build_detail['_class'] == 'hudson.plugins.sonar.action.SonarAnalysisAction')
+                  sonarqube_dashboard_url = build_detail['sonarqubeDashboardUrl']
+                  @logger.info "sonarqubeDashboardUrl: '#{sonarqube_dashboard_url}'"
+                  return sonarqube_dashboard_url
+                end
+              end
+            end
+          end 
+        rescue => e
+          errorMsg = "getSonarqubeDashboardUrlAux: " + e.message
+          @errors << errorMsg
+          @logger.error errorMsg
+          @logger.error e.backtrace[0]
+          @logger.error "build_detail_array: "
+          @logger.error build_detail_array
+        end
+        return ''
+      end
+
 
       def clean_up_builds
         jenkins_job.builds.first(number_of_builds_to_delete).map(&:destroy) if too_much_builds?
@@ -233,8 +268,10 @@ module JenkinsJobs
           'running'
         when 'red_anime'
           'running'
+        when 'yellow'
+          'unstable'
         else
-          ''
+          'no color->state for ' + color
         end
       end
 

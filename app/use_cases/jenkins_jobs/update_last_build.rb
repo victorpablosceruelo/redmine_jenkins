@@ -8,8 +8,9 @@ module JenkinsJobs
         last_build = job_data['builds'].any? ? [job_data['builds'].first] : []
         do_create_builds(last_build, true)
       rescue => e
-        @errors << e.message
-        @logger.error e.message
+        errorMsg = "UpdateLastBuild: " + e.message
+        @errors << errorMsg
+        @logger.error errorMsg
         @logger.error e.backtrace.join("\n")
       end
 
