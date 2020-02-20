@@ -27,37 +27,10 @@ class JenkinsJobPresenter < SimpleDelegator
 
   def render_sonarqube_report
     if (!('' == jenkins_job.sonarqube_dashboard_url))
-      content_tag(:span, link_to_sonarqube_dashboard_url(jenkins_job.sonarqube_dashboard_url).html_safe)
+      return content_tag(:span, link_to_sonarqube_dashboard_url(jenkins_job.sonarqube_dashboard_url).html_safe)
+    else
+      return content_tag(:span, l(:label_no_sonarqube_report_available))
     end
-  end
-
-  def render_latest_build_infos
-    s = ''
-    s << content_tag(:li, job_state) 
-    s << content_tag(:li, latest_build_date) 
-    s << content_tag(:li, latest_build_duration) 
-    s << content_tag(:li, '-')
-    s << render_health_report if jenkins_job.health_report.any?
-    s.html_safe
-  end
-
-
-  def job_state
-    s = ''
-    s << content_tag(:span, link_to_jenkins_job(jenkins_job).html_safe, class: 'label label-info')
-    s << l(:label_job_state) + ": " 
-    s << content_tag(:span, link_to_console_output, class: "label label-#{state_to_css_class(jenkins_job.state)}")
-    s << content_tag(:span, '', class: 'icon icon-running') if jenkins_job.state == 'running'
-    s.html_safe
-  end
-
-
-  def latest_build_duration
-    s = ''
-    s << l(:label_job_duration)
-    s << ': '
-    s << Time.at(jenkins_job.latest_build_duration/1000).strftime "%M:%S" rescue "00:00"
-    s.html_safe
   end
 
   def latest_changesets
@@ -68,27 +41,56 @@ class JenkinsJobPresenter < SimpleDelegator
 
 
   def build_history
-    link_to_history
+    s = content_tag(:ul, build_history_list, class: 'list-unstyled')
+    s.html_safe
   end
 
 
   def job_actions
-    s = content_tag(:ul, job_actions_list)
+    s = content_tag(:ul, job_actions_list, class: 'list-unstyled')
     s.html_safe
   end
 
 
   private
 
+    def render_latest_build_infos
+      s = ''
+      s << content_tag(:li, link_to_jenkins_job(jenkins_job).html_safe, class: 'label label-info')
+      s << content_tag(:li, jenkins_job_state_image)
+
+      s << content_tag(:li, latest_build_date) 
+      s << content_tag(:li, latest_build_duration) 
+
+      s << content_tag(:li, link_to_console_output)
+      s << content_tag(:li, '', class: 'icon icon-running') if jenkins_job.state == 'running'
+
+      s.html_safe
+    end
+
+
+    def jenkins_job_state_image
+      tag_label = l(:label_job_state) + ": " + state_to_label(jenkins_job.state)
+      tag_class = "label label-#{state_to_css_class(jenkins_job.state)}"
+      content_tag(:span, tag_label, class: tag_class)
+    end
+
+    def latest_build_duration
+      s = ''
+      s << l(:label_job_duration)
+      s << ': '
+      s << Time.at(jenkins_job.latest_build_duration/1000).strftime("%M:%S") rescue "00:00"
+      s.html_safe
+    end
 
     def job_actions_list
       s = ''
       s << content_tag(:li, link_to_refresh)
       if User.current.allowed_to?(:build_jenkins_jobs, jenkins_job.project)
-        s << content_tag(:li, '-')
+        s << content_tag(:li, '')
         s << content_tag(:li, link_to_build)
       end
-      s
+      s.html_safe
     end
 
 
@@ -99,19 +101,25 @@ class JenkinsJobPresenter < SimpleDelegator
     end
 
 
-    def render_health_report
-      content_tag(:ul, render_report_list, class: 'list-unstyled')
-    end
-
-
-    def render_report_list
+    def build_history_list
       s = ''
-      jenkins_job.health_report.each do |health_report|
-        s << content_tag(:li, "#{health_report['description']} #{weather_icon(health_report['iconUrl'])}".html_safe)
+      
+      if jenkins_job.health_report.any?
+        jenkins_job.health_report.each do |health_report|
+          s << content_tag(:li, render_health_report_element(health_report))
+        end
+  
+        s << content_tag(:li, '')
       end
+  
+      s << content_tag(:li, link_to_history)
       s.html_safe
     end
+  
 
+    def render_health_report_element(health_report)
+      "#{weather_icon(health_report['iconUrl'], health_report['description'])}".html_safe
+    end
 
     def latest_build_date
       l(:label_finished_at) + ": #{format_time(jenkins_job.latest_build_date)}"
@@ -120,7 +128,7 @@ class JenkinsJobPresenter < SimpleDelegator
 
     def link_to_console_output
       url = jenkins_job.latest_build_number == 0 ? 'javascript:void(0);' : console_jenkins_job_path(jenkins_job.project, jenkins_job)
-      link_to state_to_label(jenkins_job.state), url, title: l(:label_see_console_output), class: 'modal-box-close-only'
+      link_to l(:label_see_console_output), url, title: l(:label_see_console_output), class: 'modal-box-close-only'
     end
 
 

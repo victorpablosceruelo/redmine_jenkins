@@ -51,6 +51,7 @@ en:
   label_display_more: Display more
   label_sonarqube_dashboard_url: SonarQube Dashboard
   label_job_actions: Actions
+  label_no_sonarqube_report_available: No SonarQube report available
 
   notice_job_added: Job added
   notice_job_add_failed: Adding job failed

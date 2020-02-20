@@ -18,8 +18,12 @@ module JenkinsHelper
   end
 
 
-  def weather_icon(icon)
-    image_tag(plugin_asset_link('redmine_jenkins', icon), alt: icon, style: 'display: inline-block; margin-top: 5px;')
+  def weather_icon(icon, description)
+    image_tag(plugin_asset_link('redmine_jenkins', icon), 
+              alt: description, style: 'display: inline-block; margin-top: 5px;',
+              title: description, longdesc: description,
+              data: { title: description })
+    # alt: icon,
   end
 
 
@@ -39,7 +43,7 @@ module JenkinsHelper
     link_to "##{job.latest_build_number}", url, target: target
   end
 
-  
+
   def link_to_sonarqube_dashboard_url(sonarqube_dashboard_url)
     link_to l(:label_sonarqube_dashboard_url), sonarqube_dashboard_url, target: '_blank'
   end
