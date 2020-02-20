@@ -22,10 +22,10 @@ module RedmineJenkins
         def project_settings_tabs_with_redmine_jenkins(&block)
           tabs = project_settings_tabs_without_redmine_jenkins(&block)
           tabs.push({
-            :name    => 'jenkins',
+            :name    => :label_ci_cd_long,
             :action  => :edit_jenkins_settings,
             :partial => 'projects/settings/redmine_jenkins',
-            :label   => :label_jenkins
+            :label   => :label_ci_cd
           })
           tabs.select {|tab| User.current.allowed_to?(tab[:action], @project)}
           tabs

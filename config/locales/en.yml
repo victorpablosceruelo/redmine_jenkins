@@ -1,5 +1,7 @@
 en:
   label_jenkins: Jenkins
+  label_ci_cd: CI/CD
+  label_ci_cd_long: Continuous Integration / Continuous Deployment
   label_build_activity_plural: Jenkins
 
   ### SETTINGS
