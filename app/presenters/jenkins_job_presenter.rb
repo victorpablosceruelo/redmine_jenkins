@@ -25,12 +25,20 @@ class JenkinsJobPresenter < SimpleDelegator
     content_tag(:ul, render_latest_build_infos, class: 'list-unstyled')
   end
 
-  
+  def render_sonarqube_report
+    if (!('' == jenkins_job.sonarqube_dashboard_url))
+      content_tag(:span, link_to_sonarqube_dashboard_url(jenkins_job.sonarqube_dashboard_url).html_safe)
+    end
+  end
+
   def render_latest_build_infos
-    content_tag(:li, job_state) +
-    content_tag(:li, latest_build_date) +
-    content_tag(:li, latest_build_duration) +
-    content_tag(:li, link_to_sonarqube_dashboard_url(jenkins_job.sonarqube_dashboard_url).html_safe)
+    s = ''
+    s << content_tag(:li, job_state) 
+    s << content_tag(:li, latest_build_date) 
+    s << content_tag(:li, latest_build_duration) 
+    s << content_tag(:li, '-')
+    s << render_health_report if jenkins_job.health_report.any?
+    s.html_safe
   end
 
 
@@ -45,11 +53,11 @@ class JenkinsJobPresenter < SimpleDelegator
 
 
   def latest_build_duration
-    l(:label_job_duration) + latest_build_duration_time
-  end
-
-  def latest_build_duration_time
-    Time.at(jenkins_job.latest_build_duration/1000).strftime "%M:%S" rescue "00:00"
+    s = ''
+    s << l(:label_job_duration)
+    s << ': '
+    s << Time.at(jenkins_job.latest_build_duration/1000).strftime "%M:%S" rescue "00:00"
+    s.html_safe
   end
 
   def latest_changesets
@@ -65,9 +73,7 @@ class JenkinsJobPresenter < SimpleDelegator
 
 
   def job_actions
-    s = ''
-    s << link_to_build if User.current.allowed_to?(:build_jenkins_jobs, jenkins_job.project)
-    s << link_to_refresh
+    s = content_tag(:ul, job_actions_list)
     s.html_safe
   end
 
@@ -75,10 +81,20 @@ class JenkinsJobPresenter < SimpleDelegator
   private
 
 
+    def job_actions_list
+      s = ''
+      s << content_tag(:li, link_to_refresh)
+      if User.current.allowed_to?(:build_jenkins_jobs, jenkins_job.project)
+        s << content_tag(:li, '-')
+        s << content_tag(:li, link_to_build)
+      end
+      s
+    end
+
+
     def render_job_description
       s = ''
       s << jenkins_job.description
-      s << render_health_report if jenkins_job.health_report.any?
       s
     end
 
@@ -98,7 +114,7 @@ class JenkinsJobPresenter < SimpleDelegator
 
 
     def latest_build_date
-      l(:at) + " (#{format_time(jenkins_job.latest_build_date)})"
+      l(:label_finished_at) + ": #{format_time(jenkins_job.latest_build_date)}"
     end
 
 

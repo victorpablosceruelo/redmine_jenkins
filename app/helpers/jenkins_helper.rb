@@ -39,9 +39,9 @@ module JenkinsHelper
     link_to "##{job.latest_build_number}", url, target: target
   end
 
-
+  
   def link_to_sonarqube_dashboard_url(sonarqube_dashboard_url)
-    link_to l(:label_sonarqube_dashboard_url), sonarqube_dashboard_url, target: 'about_blank'
+    link_to l(:label_sonarqube_dashboard_url), sonarqube_dashboard_url, target: '_blank'
   end
 
 

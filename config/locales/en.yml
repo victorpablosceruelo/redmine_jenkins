@@ -1,5 +1,6 @@
 en:
   label_jenkins: Jenkins
+  label_sonarqube: SonarQube
   label_ci_cd: CI/CD
   label_ci_cd_long: Continuous Integration / Continuous Deployment
   label_build_activity_plural: Jenkins
@@ -49,6 +50,7 @@ en:
   label_job_duration: Duration
   label_display_more: Display more
   label_sonarqube_dashboard_url: SonarQube Dashboard
+  label_job_actions: Actions
 
   notice_job_added: Job added
   notice_job_add_failed: Adding job failed
