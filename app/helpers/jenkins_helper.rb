@@ -17,6 +17,16 @@ module JenkinsHelper
     end
   end
 
+  def state_to_label(state)
+    state.gsub('_', ' ').capitalize
+  end
+
+  def state_color_to_image(state_color, description)
+    image_tag(plugin_asset_link('redmine_jenkins', state_color), 
+              alt: description, style: 'display: inline-block; vertical-align: bottom;',
+              title: description, longdesc: description,
+              data: { title: description })
+  end
 
   def weather_icon(icon, description)
     image_tag(plugin_asset_link('redmine_jenkins', icon), 
@@ -25,12 +35,6 @@ module JenkinsHelper
               data: { title: description })
     # alt: icon,
   end
-
-
-  def state_to_label(state)
-    state.gsub('_', ' ').capitalize
-  end
-
 
   def plugin_asset_link(plugin_name, asset_name)
     File.join(Redmine::Utils.relative_url_root, 'plugin_assets', plugin_name, 'images', asset_name)

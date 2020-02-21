@@ -70,9 +70,8 @@ class JenkinsJobPresenter < SimpleDelegator
 
 
     def jenkins_job_state_image
-      tag_label = l(:label_job_state) + ": " + state_to_label(jenkins_job.state)
-      tag_class = "label label-#{state_to_css_class(jenkins_job.state)}"
-      content_tag(:span, tag_label, class: tag_class)
+      img_desc = l(:label_job_state) + ": " + state_to_label(jenkins_job.state) + "(" + jenkins_job.state_color + ")"
+      content_tag(:span, state_color_to_image(jenkins_job.state_color, img_desc))
     end
 
     def latest_build_duration
