@@ -20,7 +20,7 @@ module JenkinsHelper
 
   def weather_icon(icon, description)
     image_tag(plugin_asset_link('redmine_jenkins', icon), 
-              alt: description, style: 'display: inline-block; margin-top: 5px;',
+              alt: description, style: 'display: inline-block; vertical-align: bottom;',
               title: description, longdesc: description,
               data: { title: description })
     # alt: icon,

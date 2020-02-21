@@ -85,14 +85,16 @@ class JenkinsJobPresenter < SimpleDelegator
 
     def job_actions_list
       s = ''
-      s << content_tag(:li, link_to_refresh)
+      s << content_tag(:li, link_to_refresh, style: getLiStyleForIcons)
       if User.current.allowed_to?(:build_jenkins_jobs, jenkins_job.project)
-        s << content_tag(:li, '')
-        s << content_tag(:li, link_to_build)
+        s << content_tag(:li, link_to_build, style: getLiStyleForIcons)
       end
       s.html_safe
     end
 
+    def getLiStyleForIcons
+      "line-height:34px; margin:2px; vertical-align:middle; "
+    end
 
     def render_job_description
       s = ''
@@ -106,13 +108,11 @@ class JenkinsJobPresenter < SimpleDelegator
       
       if jenkins_job.health_report.any?
         jenkins_job.health_report.each do |health_report|
-          s << content_tag(:li, render_health_report_element(health_report))
+          s << content_tag(:li, render_health_report_element(health_report), style: getLiStyleForIcons)
         end
-  
-        s << content_tag(:li, '')
       end
   
-      s << content_tag(:li, link_to_history)
+      s << content_tag(:li, link_to_history, style: getLiStyleForIcons)
       s.html_safe
     end
   
