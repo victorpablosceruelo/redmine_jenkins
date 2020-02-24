@@ -22,7 +22,7 @@ class JenkinsJobPresenter < SimpleDelegator
 
 
   def latest_build_infos
-    content_tag(:ul, render_latest_build_infos, class: 'list-unstyled')
+    content_tag(:ul, render_latest_build_infos, class: 'list-unstyled', style: "line-height:34px")
   end
 
   def render_sonarqube_report
@@ -47,7 +47,7 @@ class JenkinsJobPresenter < SimpleDelegator
 
 
   def job_actions
-    s = content_tag(:ul, job_actions_list, class: 'list-unstyled')
+    s = content_tag(:ul, job_actions_list, class: 'list-unstyled', style: "line-height:34px")
     s.html_safe
   end
 
@@ -56,11 +56,10 @@ class JenkinsJobPresenter < SimpleDelegator
 
     def render_latest_build_infos
       s = ''
-      s << content_tag(:li, link_to_jenkins_job(jenkins_job).html_safe, class: 'label label-info')
-      s << content_tag(:li, jenkins_job_state_image)
+      s << content_tag(:li, render_jenkins_job_link_and_state(jenkins_job))
 
-      s << content_tag(:li, latest_build_date) 
       s << content_tag(:li, latest_build_duration) 
+      s << content_tag(:li, latest_build_date) 
 
       s << content_tag(:li, link_to_console_output)
       s << content_tag(:li, '', class: 'icon icon-running') if jenkins_job.state == 'running'
@@ -69,10 +68,16 @@ class JenkinsJobPresenter < SimpleDelegator
     end
 
 
-    def jenkins_job_state_image
+    def render_jenkins_job_link_and_state(jenkins_job)
       img_desc = l(:label_job_state) + ": " + state_to_label(jenkins_job.state) + "(" + jenkins_job.state_color + ")"
-      content_tag(:span, state_color_to_image(jenkins_job.state_color, img_desc))
+
+      s = ''
+      s << content_tag(:span, link_to_jenkins_job(jenkins_job).html_safe, class: 'label label-info')
+      s << content_tag(:span, state_color_to_image(jenkins_job.state_color, img_desc), style: "margin-left:20px; vertical_align:middle; ")
+
+      s.html_safe
     end
+
 
     def latest_build_duration
       s = ''

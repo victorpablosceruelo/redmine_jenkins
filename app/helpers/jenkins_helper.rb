@@ -22,8 +22,16 @@ module JenkinsHelper
   end
 
   def state_color_to_image(state_color, description)
-    image_tag(plugin_asset_link('redmine_jenkins', state_color), 
-              alt: description, style: 'display: inline-block; vertical-align: bottom;',
+    image_fileextension = ".png"
+    if state_color.downcase.include?('anime')
+      image_fileextension = ".gif"
+    end
+
+    image_file = state_color + image_fileextension
+    image_file = image_file.gsub(" ", "_")
+
+    image_tag(plugin_asset_link('redmine_jenkins', image_file), 
+              alt: description, style: 'display: inline-block; vertical-align: bottom; height: 30px; ',
               title: description, longdesc: description,
               data: { title: description })
   end
