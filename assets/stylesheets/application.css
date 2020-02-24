@@ -22,3 +22,16 @@ ul.changesets_list li p.revision {
 div.changesets.invisible {
   display: none;
 }
+
+.ui-dialog-title .not-a-title {
+  display: none;
+}
+
+.only-a-title {
+  display: none;
+}
+
+.ui-dialog-title .only-a-title {
+  display: none;
+}
+

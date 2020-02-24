@@ -15,7 +15,7 @@ class JenkinsJobPresenter < SimpleDelegator
 
   def job_info
     s = ''
-    s << content_tag(:h3, link_to(jenkins_job.name, jenkins_job.url, target: 'about_blank'))
+    s << content_tag(:h3, link_to(jenkins_job.name, jenkins_job.url, target: '_blank'))
     s << render_job_description unless jenkins_job.project.jenkins_setting.show_compact?
     s.html_safe
   end
@@ -132,22 +132,31 @@ class JenkinsJobPresenter < SimpleDelegator
 
     def link_to_console_output
       url = jenkins_job.latest_build_number == 0 ? 'javascript:void(0);' : console_jenkins_job_path(jenkins_job.project, jenkins_job)
-      link_to l(:label_see_console_output), url, title: l(:label_see_console_output), class: 'modal-box-close-only'
+      link_to(l(:label_see_console_output), url, target:'_blank')
+      # title: l(:label_see_console_output), remote: true
     end
 
 
     def link_to_build
-      link_to fa_icon('fa-gears'), build_jenkins_job_path(jenkins_job.project, jenkins_job), title: l(:label_build_now), remote: true
+      link_to(fa_icon('fa-gears'), build_jenkins_job_path(jenkins_job.project, jenkins_job), title: l(:label_build_now), remote: true)
     end
 
 
     def link_to_refresh
-      link_to fa_icon('fa-refresh'), refresh_jenkins_job_path(jenkins_job.project, jenkins_job), title: l(:label_refresh_builds), remote: true
+      link_to(fa_icon('fa-refresh'), refresh_jenkins_job_path(jenkins_job.project, jenkins_job), title: l(:label_refresh_builds), remote: true)
     end
 
 
     def link_to_history
-      link_to fa_icon('fa-history'), history_jenkins_job_path(jenkins_job.project, jenkins_job), title: l(:label_see_history), class: 'modal-box-close-only'
+      jenkins_history_url = history_jenkins_job_path(jenkins_job.project, jenkins_job)
+      url_title = l(:label_see_history)
+
+      icon_image = content_tag(:span, url_title, class: "fa fa-lg fa-history").html_safe
+      # icon_image = fa_icon 'fa-history', text: "Jenkins Jobs\' History" 
+      link_to(icon_image, jenkins_history_url, class: 'modal-box-close-only', title: url_title)
+      # , data: { "toggle" => "tooltip", "original-title" => "History", "title" => "History"} 
+      # class: 'modal-box-close-only', data: { "toggle" => "tooltip", "original-title" => "Logout", "placement" => "bottom" }
+      # data: {toggle: "modal", target: "#modal"} 
     end
 
 
