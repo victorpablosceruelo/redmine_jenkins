@@ -8,17 +8,15 @@
   %table{ class: 'table table-hover' }
     %thead
       %tr
-        %th{:colspan => 1}
-        %th{:colspan => 3, :style => "text-align:center"}= l(:label_jenkins)
-        %th{:colspan => 1}= l(:label_sonarqube)
-        %th{:colspan => 1}
+        %th{:colspan => 1, :class => 'jenkins_jobs_list_table_1st_head_1st_cell'}
+        %th{:colspan => 3, :class => 'jenkins_jobs_list_table_1st_head'}= l(:label_jenkins)
+        %th{:colspan => 1, :class => 'jenkins_jobs_list_table_1st_head'}= l(:label_sonarqube)
       %tr
-        %th= l(:label_job_name)
-        %th= l(:label_latest_build)
-        %th= l(:label_job_history)
-        %th= l(:label_job_actions)
-        %th
-        %th
+        %th{:colspan => 1, :class => 'jenkins_jobs_list_table_2nd_head_1st_cell'}= l(:label_job_name)
+        %th{:colspan => 1, :class => 'jenkins_jobs_list_table_2nd_head'}= l(:label_latest_build)
+        %th{:colspan => 1, :class => 'jenkins_jobs_list_table_2nd_head'}= l(:label_job_history)
+        %th{:colspan => 1, :class => 'jenkins_jobs_list_table_2nd_head'}= l(:label_job_actions)
+        %th{:colspan => 1, :class => 'jenkins_jobs_list_table_2nd_head'}
 
     %tbody
       - jobs.each do |job|

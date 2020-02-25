@@ -25,6 +25,8 @@ class JenkinsClient
     JenkinsApi::Client.new(@options)
   rescue ArgumentError => e
     raise RedmineJenkins::Error::JenkinsConnectionError, e
+  rescue Unauthorized => e
+    raise RedmineJenkins::Error::JenkinsConnectionError, e
   end
 
 

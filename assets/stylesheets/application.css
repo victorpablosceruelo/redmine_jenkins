@@ -35,3 +35,49 @@ div.changesets.invisible {
   display: none;
 }
 
+.state_color_image {
+  display: inline-block; 
+  vertical-align: bottom; 
+  height:30px;
+}
+
+.jenkins_jobs_logs_icon {
+  display: inline-block; 
+  vertical-align: middle; 
+  height:25px;
+}
+
+.weather_image_icon {
+  display: inline-block; 
+  vertical-align: bottom;
+}
+
+.job_status_line {
+  margin-left:20px; 
+  vertical-align:middle; 
+}
+
+th.jenkins_jobs_list_table_1st_head_1st_cell,
+th.jenkins_jobs_list_table_2nd_head_1st_cell {
+  text-align:left;
+  /* border-right: 1px solid #dddddd; */
+}
+
+th.jenkins_jobs_list_table_1st_head {
+  text-align:center;
+  border-left: 1px solid #dddddd;
+}
+
+th.jenkins_jobs_list_table_2nd_head {
+  text-align:left;
+  border-left: 1px solid #dddddd;
+}
+
+
+/* Affects too much dialogs ... :(
+.ui-dialog {
+  max-width: 90%;
+  max-height: 90%;
+  overflow-y: scroll;
+}*/
+

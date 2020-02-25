@@ -49,7 +49,20 @@ class JenkinsJob < ActiveRecord::Base
       begin
         jenkins_connection.job.get_console_output(name2url, latest_build_number)['output'].gsub('\r\n', '<br />')
       rescue => e
+
+        @log_location = STDOUT unless @log_location
+        @log_level = Logger::INFO unless @log_level
+        unless @logger
+          @logger = Logger.new(@log_location)
+          @logger.level = @log_level
+        end
+
+        errorMsg = "Jenkins Response: " + e.message
+        @logger.error errorMsg
+        @logger.error e.backtrace.join("\n")
+
         e.message
+
       end
     console_output
   end

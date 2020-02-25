@@ -31,14 +31,23 @@ module JenkinsHelper
     image_file = image_file.gsub(" ", "_")
 
     image_tag(plugin_asset_link('redmine_jenkins', image_file), 
-              alt: description, style: 'display: inline-block; vertical-align: bottom; height: 30px; ',
+              alt: description, class: 'state_color_image',
               title: description, longdesc: description,
               data: { title: description })
   end
 
+  def jenkins_logs_icon()
+    description = l(:label_see_jenkins_job_build_logs)
+    image_tag(plugin_asset_link('redmine_jenkins', 'logs-icon.png'), 
+              alt: description, class: 'jenkins_jobs_logs_icon',
+              title: description, longdesc: description,
+              data: { title: description })
+    # alt: icon,
+  end
+
   def weather_icon(icon, description)
     image_tag(plugin_asset_link('redmine_jenkins', icon), 
-              alt: description, style: 'display: inline-block; vertical-align: bottom;',
+              alt: description, class: 'weather_image_icon',
               title: description, longdesc: description,
               data: { title: description })
     # alt: icon,
@@ -49,15 +58,25 @@ module JenkinsHelper
   end
 
 
-  def link_to_jenkins_job(job)
+  def link_to_jenkins_job_latest_build(job)
+    longdesc = l(:label_see_jenkins_job_build) + " ##{job.latest_build_number}"
     url    = job.latest_build_number == 0 ? 'javascript:void(0);' : job.latest_build_url
-    target = job.latest_build_number == 0 ? '' : 'about_blank'
-    link_to "##{job.latest_build_number}", url, target: target
+    target = job.latest_build_number == 0 ? '' : '_blank'
+    link_to "##{job.latest_build_number}", url, target: target, longdesc: longdesc, alt: longdesc, title: longdesc
+  end
+
+
+  def link_to_jenkins_job_latest_build_console(job)
+    url    = job.latest_build_number == 0 ? 'javascript:void(0);' : job.latest_build_url + '/console'
+    target = job.latest_build_number == 0 ? '' : '_blank'
+    link_to jenkins_logs_icon, url, target: target
+    # Attributes included in image: longdesc: longdesc, alt: longdesc, title: longdesc
   end
 
 
   def link_to_sonarqube_dashboard_url(sonarqube_dashboard_url)
-    link_to l(:label_sonarqube_dashboard_url), sonarqube_dashboard_url, target: '_blank'
+    longdesc = l(:label_see_sonarqube_dashboard_url)
+    link_to l(:label_sonarqube_dashboard_url), sonarqube_dashboard_url, target: '_blank', longdesc: longdesc, alt: longdesc, title: longdesc
   end
 
 

@@ -49,9 +49,15 @@ en:
   label_linked_repository: Linked repository
   label_job_duration: Duration
   label_display_more: Display more
-  label_sonarqube_dashboard_url: SonarQube Dashboard
   label_job_actions: Actions
+  label_job_build_state: 'Job Build State'
+  label_sonarqube_dashboard_url: SonarQube Dashboard
+  label_see_sonarqube_dashboard_url: See SonarQube Dashboard
   label_no_sonarqube_report_available: No SonarQube report available
+  label_see_jenkins_job: 'See Jenkins Job '
+  label_see_jenkins_jobs_history: "See Jenkins Jobs' History"
+  label_see_jenkins_job_build: 'See Jenkins Job Build '
+  label_see_jenkins_job_build_logs: 'See Jenkins Job Build Logs '
 
   notice_job_added: Job added
   notice_job_add_failed: Adding job failed
