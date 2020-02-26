@@ -1,6 +1,7 @@
 require 'logger'
 require 'net/http'
 require 'json'
+require 'base64'
 
 module JenkinsJobs
   class Base
@@ -256,9 +257,43 @@ module JenkinsJobs
         @logger.info "Username / pwd: #{jenkins_job.jenkins_setting.auth_user} / #{jenkins_job.jenkins_setting.auth_password} "
 
         uri = URI(url)
-        response = Net::HTTP.get_response(uri)
-        @logger.info response
       
+        # authentication = ActionController::HttpAuthentication::Basic.encode_credentials(jenkins_job.jenkins_auth_user, jenkins_job.jenkins_auth_password)
+        # user_pwd_str = '#{jenkins_job.jenkins_setting.auth_user}:#{jenkins_job.jenkins_setting.auth_password}'
+        user_pwd_str = jenkins_job.jenkins_setting.auth_user + ':' + jenkins_job.jenkins_setting.auth_password
+
+        @logger.info 'user_pwd_str'
+        @logger.info user_pwd_str
+
+        authorization_header = 'Basic ' + Base64.strict_encode64(user_pwd_str)
+        @logger.info 'authorization_header'
+        @logger.info authorization_header
+
+        response = ''
+        Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https', 
+                                    :verify_mode => OpenSSL::SSL::VERIFY_NONE) {|http|
+
+          # http = Net::HTTP.new(uri.host, uri.port)
+          @logger.info 'http'
+          @logger.info http
+          
+          # request = Net::HTTP::Get.new(uri.path)
+          request = Net::HTTP::Get.new(url)
+          # request.basic_auth '#{jenkins_job.jenkins_auth_user}', '#{jenkins_job.jenkins_auth_password}'
+          request['Authorization'] = authorization_header
+          
+          @logger.info 'request'
+          @logger.info request
+          @logger.info 'request[Authorization]: ' + request['Authorization']
+
+          response = http.request request # Net::HTTPResponse object
+        
+          @logger.info 'response'
+          @logger.info response
+        }
+        @logger.info 'response'
+        @logger.info response
+
         case response
         when Net::HTTPSuccess then
           response
@@ -269,10 +304,11 @@ module JenkinsJobs
           @errors << errorMsg
           fetch_url(location, limit - 1)
         else
-          errorMsg = "Server returned error value #{response.value}. Url: #{url} "
+          errorMsg = "Server returned error when querying url: #{url} (#{uri.path})."
           @logger.warn errorMsg
           @errors << errorMsg
-          response.value
+          @logger.warn response
+          response
         end
       end
 

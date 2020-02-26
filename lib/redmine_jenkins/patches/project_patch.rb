@@ -17,11 +17,16 @@ module RedmineJenkins
 
       module InstanceMethods
 
-        def jenkins_setting
-          jenkins_setting
+        def jenkins_auth_user
+          jenkins_setting.auth_user
         end
 
-        
+
+        def jenkins_auth_password
+          jenkins_setting.auth_password
+        end
+
+
         def jenkins_url
           jenkins_setting.url
         end
