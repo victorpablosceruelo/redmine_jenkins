@@ -17,6 +17,11 @@ module RedmineJenkins
 
       module InstanceMethods
 
+        def jenkins_setting
+          jenkins_setting
+        end
+
+        
         def jenkins_url
           jenkins_setting.url
         end

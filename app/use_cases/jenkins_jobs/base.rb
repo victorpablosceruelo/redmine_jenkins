@@ -1,4 +1,6 @@
 require 'logger'
+require 'net/http'
+require 'json'
 
 module JenkinsJobs
   class Base
@@ -116,6 +118,8 @@ module JenkinsJobs
         ## Update SonarqubeDashboardUrl
         getSonarqubeDashboardUrl(build_details)
 
+        update_sonarqube_metrics_if_possible()
+
       end
 
 
@@ -125,7 +129,7 @@ module JenkinsJobs
         ## Get BuildDetails from Jenkins
         build_details = get_jenkins_build_details(build_number)
 
-        @logger.info "update_build: build_details: '#{build_details}'"
+        # @logger.info "update_build: build_details: '#{build_details}'"
 
         ## Update the AR object with new data
         build.result      = build_details['result'].nil? ? 'running' : build_details['result']
@@ -140,20 +144,24 @@ module JenkinsJobs
         ## Update SonarqubeDashboardUrl
         getSonarqubeDashboardUrl(build_details)
 
+        update_sonarqube_metrics_if_possible()
+
       end
 
       def create_changeset_if_possible(build, build_details)
         ## Update changesets. Be careful: sometimes the answer does not have them ... 
         if (build_details['changeSet'] == nil)
-          errorMsg = "Could not create changeSet: changeSet not available in Jenkins response."
+          errorMsg = "Could not create changeSet: changeSet not available in Jenkins response. Jenkins Response: \n"
           @logger.warn errorMsg
-          @errors << errorMsg
+          # @errors << errorMsg
+          @logger.warn build_details
         else
           changeSet = build_details['changeSet']
           if (changeSet['items'] == nil)
-            errorMsg = "Could not create changeSet: changeSetItems not available in Jenkins response."
+            errorMsg = "Could not create changeSet: changeSetItems not available in Jenkins response. Jenkins Response: \n"
             @logger.warn errorMsg
-            @errors << errorMsg
+            # @errors << errorMsg
+            @logger.warn build_details
           else
             changeSetItems = changeSet['items']
             create_changeset(build, changeSetItems)
@@ -189,9 +197,9 @@ module JenkinsJobs
       def getSonarqubeDashboardUrlAux(key, build_detail_array)
         begin
           if (! (key == nil)) && (key == 'actions')
-            @logger.info "build_detail_array: '#{build_detail_array}'"
+            # @logger.info "build_detail_array: '#{build_detail_array}'"
             build_detail_array.each do |build_detail|
-              @logger.info "build_detail: '#{build_detail}'"
+              # @logger.info "build_detail: '#{build_detail}'"
               if ((! (build_detail == nil)) && (! (build_detail['_class'] == nil)))
                 if (build_detail['_class'] == 'hudson.plugins.sonar.action.SonarAnalysisAction')
                   sonarqube_dashboard_url = build_detail['sonarqubeDashboardUrl']
@@ -210,6 +218,62 @@ module JenkinsJobs
           @logger.error build_detail_array
         end
         return ''
+      end
+
+      def update_sonarqube_metrics_if_possible()
+        if ('' == jenkins_job.sonarqube_dashboard_url)
+          @logger.info "update_sonarqube_metrics_if_possible: Not possible when url is invalid in jenkins_job.sonarqube_dashboard_url."
+          return
+        end
+        @logger.info "update_sonarqube_metrics_if_possible: sonarqubeDashboardUrl: '#{jenkins_job.sonarqube_dashboard_url}'"
+
+        begin
+          sonarqube_api_url = jenkins_job.sonarqube_dashboard_url
+          sonarqube_api_url = sonarqube_api_url.gsub("dashboard?id=", "api/measures/component?component=")
+          sonarqube_api_url = sonarqube_api_url + "&metricKeys=bugs,vulnerabilities"
+          @logger.info "update_sonarqube_metrics_if_possible: url to retrieve sonarqube metrics: " + sonarqube_api_url
+
+          response = fetch_url(sonarqube_api_url)
+          jsonResult = JSON.parse(response)
+          # jsonResult = JSON.load(URI.open(url))
+          @logger.info jsonResult
+
+
+
+        rescue => e
+          errorMsg = "update_sonarqube_metrics_if_possible: " + e.message
+          @errors << errorMsg
+          @logger.error errorMsg
+          @logger.error e.backtrace[0]
+          @logger.error e.backtrace
+        end
+      end
+
+      def fetch_url(url, limit = 10)
+        # You should choose a better exception.
+        raise RedmineJenkins::Error::JenkinsConnectionError, 'too many HTTP redirects' if limit == 0
+      
+        @logger.info "Username / pwd: #{jenkins_job.jenkins_setting.auth_user} / #{jenkins_job.jenkins_setting.auth_password} "
+
+        uri = URI(url)
+        response = Net::HTTP.get_response(uri)
+        @logger.info response
+      
+        case response
+        when Net::HTTPSuccess then
+          response
+        when Net::HTTPRedirection then
+          location = response['location']
+          errorMsg = "Server response: redirection from #{url} to #{location}. "
+          @logger.warn errorMsg
+          @errors << errorMsg
+          fetch_url(location, limit - 1)
+        else
+          errorMsg = "Server returned error value #{response.value}. Url: #{url} "
+          @logger.warn errorMsg
+          @errors << errorMsg
+          response.value
+        end
       end
 
 

@@ -18,7 +18,7 @@ class JenkinsJob < ActiveRecord::Base
   serialize :health_report, Array
 
   ## Delegators
-  delegate :jenkins_connection, :wait_for_build_id, :jenkins_url, to: :project
+  delegate :jenkins_connection, :wait_for_build_id, :jenkins_url, :jenkins_setting, to: :project
 
 
   def to_s
