@@ -231,15 +231,16 @@ module JenkinsJobs
         begin
           sonarqube_api_url = jenkins_job.sonarqube_dashboard_url
           sonarqube_api_url = sonarqube_api_url.gsub("dashboard?id=", "api/measures/component?component=")
-          sonarqube_api_url = sonarqube_api_url + "&metricKeys=bugs,vulnerabilities"
+          sonarqube_api_url = sonarqube_api_url + "&metricKeys=bugs,vulnerabilities,code_smells,sqale_index,coverage,duplicated_lines_density,violations,alert_status,lines,tests,skipped_tests,complexity"
           @logger.info "update_sonarqube_metrics_if_possible: url to retrieve sonarqube metrics: " + sonarqube_api_url
 
-          response = fetch_url(sonarqube_api_url)
-          jsonResult = JSON.parse(response)
-          # jsonResult = JSON.load(URI.open(url))
-          @logger.info jsonResult
-
-
+          response_body = fetch_url(sonarqube_api_url)
+          if (nil != response_body)
+            jsonResult = JSON.parse(response_body)
+            # jsonResult = JSON.load(URI.open(url))
+            @logger.info jsonResult
+            saveMetrics jsonResult
+          end
 
         rescue => e
           errorMsg = "update_sonarqube_metrics_if_possible: " + e.message
@@ -296,22 +297,67 @@ module JenkinsJobs
 
         case response
         when Net::HTTPSuccess then
-          response
+          return response.body
         when Net::HTTPRedirection then
           location = response['location']
           errorMsg = "Server response: redirection from #{url} to #{location}. "
           @logger.warn errorMsg
           @errors << errorMsg
-          fetch_url(location, limit - 1)
+          return fetch_url(location, limit - 1)
         else
           errorMsg = "Server returned error when querying url: #{url} (#{uri.path})."
           @logger.warn errorMsg
           @errors << errorMsg
           @logger.warn response
-          response
+          return nil
         end
       end
 
+      def saveMetrics(jsonResult)
+        if (nil == jsonResult['component'])
+          @errors << 'No component section, in json retrieved: ' + jsonResult
+        end
+        if (nil == jsonResult['component']['measures'])
+          @errors << 'No measures section in component section, in json retrieved: ' + jsonResult
+        end
+        jsonResult['component']['measures'].each do |measure|
+          metricName = measure["metric"]
+          metricValue = measure["value"]
+          if (! update_jenkins_job_metric(metricName, metricValue))
+            @errors << "Retrieved metric has no name. Value not saved. Measure json: #{measure}"
+          end
+        end
+
+        # jenkins_job.sonarqube_dashboard_url = sonarqube_dashboard_url
+        jenkins_job.save!
+        jenkins_job.reload
+
+      end
+
+      def update_jenkins_job_metric(metricName, metricValue)
+        if (nil == metricName)
+          return false
+        end
+
+        case metricName
+        when 'vulnerabilities'
+          jenkins_job.sonar_vulnerabilities = metricValue
+        when 'bugs'
+          jenkins_job.sonar_bugs = metricValue
+        when 'notbuilt'
+          'notbuilt'
+        when 'blue_anime'
+          'running'
+        when 'red_anime'
+          'running'
+        when 'yellow'
+          'unstable'
+        else
+          return false
+        end
+
+        return true
+      end
 
       def clean_up_builds
         jenkins_job.builds.first(number_of_builds_to_delete).map(&:destroy) if too_much_builds?
