@@ -30,10 +30,69 @@ class JenkinsJobPresenter < SimpleDelegator
 
   def render_sonarqube_report
     if (!('' == jenkins_job.sonarqube_dashboard_url))
-      return content_tag(:span, link_to_sonarqube_dashboard_url(jenkins_job.sonarqube_dashboard_url).html_safe)
+      s = ''
+      s << content_tag(:span, link_to_sonarqube_dashboard_url(jenkins_job.sonarqube_dashboard_url).html_safe)
+      s << content_tag(:table, render_sonarqube_report_details)
+      return s.html_safe
     else
       return content_tag(:span, l(:label_no_sonarqube_report_available))
     end
+  end
+
+  def render_sonarqube_report_details
+    s = ''
+    s << content_tag(:tr, render_sonarqube_report_details_row1)
+    s << content_tag(:tr, render_sonarqube_report_details_row2)
+    s << content_tag(:tr, render_sonarqube_report_details_row3)
+    s << content_tag(:tr, render_sonarqube_report_details_row4)
+    s << content_tag(:tr, render_sonarqube_report_details_row5)
+    s << content_tag(:tr, render_sonarqube_report_details_row6)
+    return s
+  end
+
+  #:sources_vulnerabilities, :sources_bugs, :sources_code_smells, :sources_sqale_index,
+  #                :sources_coverage, :sources_duplicated_lines_density, :sources_violations,
+  #                :sources_alert_status, :sources_lines, :sources_tests, :sources_skipped_tests,
+  #                :sources_complexity
+  def render_sonarqube_report_details_row1
+    s = ''
+    s << content_tag(:td, l(:label_sources_quality_gate))
+    s << content_tag(:td, jenkins_job.sources_alert_status)
+    return s
+  end
+
+  def render_sonarqube_report_details_row2
+    s = ''
+    s << content_tag(:td, l(:label_sources_reliability))
+    s << content_tag(:td, jenkins_job.sources_bugs +' '+ l(:label_sources_bugs))
+    return s
+  end
+
+  def render_sonarqube_report_details_row3
+    s = ''
+    s << content_tag(:td, l(:label_sources_security))
+    s << content_tag(:td, jenkins_job.sources_vulnerabilities +' '+ l(:label_sources_vulnerabilities))
+    return s
+  end
+
+  def render_sonarqube_report_details_row4
+    s = ''
+    s << content_tag(:td, l(:label_sources_coverage))
+    s << content_tag(:td, jenkins_job.sources_coverage +' '+ l(:label_sources_coverage))
+    return s
+  end
+
+  def render_sonarqube_report_details_row5
+    s = ''
+    s << content_tag(:td, l(:label_sources_duplications))
+    s << content_tag(:td, jenkins_job.sources_vulnerabilities +' '+ l(:label_sources_duplicated_lines_density))
+    return s
+  end
+
+  def render_sonarqube_report_details_row6
+    s = ''
+    s << content_tag(:td, )
+    return s
   end
 
   def latest_changesets

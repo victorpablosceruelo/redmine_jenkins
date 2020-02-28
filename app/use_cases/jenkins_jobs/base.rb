@@ -324,7 +324,7 @@ module JenkinsJobs
           metricName = measure["metric"]
           metricValue = measure["value"]
           if (! update_jenkins_job_metric(metricName, metricValue))
-            @errors << "Retrieved metric has no name. Value not saved. Measure json: #{measure}"
+            @errors << "Retrieved metric has no valid name. Value not saved. Measure json: #{measure}"
           end
         end
 
@@ -339,20 +339,43 @@ module JenkinsJobs
           return false
         end
 
+        # bugs,vulnerabilities,code_smells,sqale_index,coverage,duplicated_lines_density,violations,alert_status,lines,tests,skipped_tests,complexity
+
         case metricName
-        when 'vulnerabilities'
-          jenkins_job.sonar_vulnerabilities = metricValue
+        when 'alert_status' # Quality Gate
+          jenkins_job.sources_alert_status = metricValue
+        when 'lines' # Size
+          jenkins_job.sources_lines = metricValue
+        when 'reliability_rating' # Reliability
+          jenkins_job.sources_reliability_rating = metricValue
         when 'bugs'
-          jenkins_job.sonar_bugs = metricValue
-        when 'notbuilt'
-          'notbuilt'
-        when 'blue_anime'
-          'running'
-        when 'red_anime'
-          'running'
-        when 'yellow'
-          'unstable'
+          jenkins_job.sources_bugs = metricValue
+        when 'security_rating' # Security
+          jenkins_job.sources_security_rating = metricValue
+        when 'vulnerabilities'
+          jenkins_job.sources_vulnerabilities = metricValue
+        when 'sqale_rating' # Maintainability
+          jenkins_job.sources_sqale_rating = metricValue
+        when 'sqale_debt_ratio'
+          jenkins_job.sources_sqale_debt_ratio = metricValue
+        when 'sqale_index'
+          jenkins_job.sources_sqale_index = metricValue
+        when 'code_smells'
+          jenkins_job.sources_code_smells = metricValue
+        when 'violations' # Issues
+          jenkins_job.sources_violations = metricValue
+        when 'coverage' # Coverage
+          jenkins_job.sources_coverage = metricValue
+        when 'tests'
+          jenkins_job.sources_tests = metricValue
+        when 'skipped_tests'
+          jenkins_job.sources_skipped_tests = metricValue
+        when 'complexity' # Complexity
+          jenkins_job.sources_complexity = metricValue
+        when 'duplicated_lines_density'
+          jenkins_job.sources_duplicated_lines_density = metricValue
         else
+          @errors << "Metric has an invalid name: ${metricName}."
           return false
         end
 

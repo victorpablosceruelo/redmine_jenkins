@@ -6,7 +6,28 @@ class JenkinsJob < ActiveRecord::Base
   belongs_to :repository
   has_many   :builds, class_name: 'JenkinsBuild', dependent: :destroy
 
-  attr_accessible :name, :repository_id, :builds_to_keep, :sonarqube_dashboard_url, :state_color
+  # Technical Debt (sqale_index)
+  # Effort to fix all Code Smells. The measure is stored in minutes in the database. 
+  # An 8-hour day is assumed when values are shown in days.
+  attr_accessible :name, :repository_id, :builds_to_keep, :sonarqube_dashboard_url, :state_color,
+                  # Quality Gate
+                  :sources_alert_status,
+                  # Size
+                  :sources_lines,
+                  # Reliability
+                  :sources_reliability_rating, :sources_bugs,
+                  # Security
+                  :sources_security_rating, sources_vulnerabilities,
+                  # Maintainability
+                  :sources_sqale_rating, :sources_sqale_debt_ratio, 
+                  :sources_sqale_index, :sources_code_smells, 
+                  # Issues
+                  :sources_violations,
+                  # Coverage
+                  :sources_coverage, :sources_tests, :sources_skipped_tests,
+                  # Complexity
+                  :sources_complexity, :sources_duplicated_lines_density
+                  
 
   ## Validations
   validates :project_id,     presence: true
