@@ -231,7 +231,10 @@ module JenkinsJobs
         begin
           sonarqube_api_url = jenkins_job.sonarqube_dashboard_url
           sonarqube_api_url = sonarqube_api_url.gsub("dashboard?id=", "api/measures/component?component=")
-          sonarqube_api_url = sonarqube_api_url + "&metricKeys=bugs,vulnerabilities,code_smells,sqale_index,coverage,duplicated_lines_density,violations,alert_status,lines,tests,skipped_tests,complexity"
+          sonarqube_api_url = sonarqube_api_url + "&metricKeys=" +
+            "alert_status,lines,reliability_rating,bugs,security_rating,vulnerabilities," +
+            "sqale_rating,sqale_debt_ratio,sqale_index,code_smells,violations," +
+            "coverage,tests,skipped_tests,complexity,duplicated_lines_density"
           @logger.info "update_sonarqube_metrics_if_possible: url to retrieve sonarqube metrics: " + sonarqube_api_url
 
           response_body = fetch_url(sonarqube_api_url)

@@ -45,8 +45,8 @@ class JenkinsJobPresenter < SimpleDelegator
     s << content_tag(:tr, render_sonarqube_report_details_row2)
     s << content_tag(:tr, render_sonarqube_report_details_row3)
     s << content_tag(:tr, render_sonarqube_report_details_row4)
-    s << content_tag(:tr, render_sonarqube_report_details_row5)
-    s << content_tag(:tr, render_sonarqube_report_details_row6)
+    # s << content_tag(:tr, render_sonarqube_report_details_row5)
+    # s << content_tag(:tr, render_sonarqube_report_details_row6)
     return s
   end
 
@@ -58,40 +58,90 @@ class JenkinsJobPresenter < SimpleDelegator
     s = ''
     s << content_tag(:td, l(:label_sources_quality_gate))
     s << content_tag(:td, jenkins_job.sources_alert_status)
+
+    s << content_tag(:td, l(:label_sources_lines))
+    s << content_tag(:td, jenkins_job.sources_lines)
+    s << content_tag(:td, l(:label_sources_reliability))
+    s << content_tag(:td, render_sonarqube_report_details_cell_reliability)
+    return s
+  end
+
+  def render_sonarqube_report_details_cell_reliability
+    s = ''
+    s << jenkins_job.sources_reliability_rating 
+    s << '('
+    s <<  jenkins_job.sources_bugs 
+    s << ' ' 
+    s << l(:label_sources_bugs) 
+    s << ')'
     return s
   end
 
   def render_sonarqube_report_details_row2
     s = ''
-    s << content_tag(:td, l(:label_sources_reliability))
-    s << content_tag(:td, jenkins_job.sources_bugs +' '+ l(:label_sources_bugs))
+    s << content_tag(:td, l(:label_sources_security_rating))
+    s << content_tag(:td, jenkins_job.sources_security_rating)
+    s << content_tag(:td, l(:label_sources_vulnerabilities))
+    s << content_tag(:td, jenkins_job.sources_vulnerabilities)
+    s << content_tag(:td, ' ')
+    s << content_tag(:td, ' ')
     return s
   end
 
   def render_sonarqube_report_details_row3
     s = ''
-    s << content_tag(:td, l(:label_sources_security))
-    s << content_tag(:td, jenkins_job.sources_vulnerabilities +' '+ l(:label_sources_vulnerabilities))
+    s << content_tag(:td, l(:label_sources_maintainability))
+    s << content_tag(:td, jenkins_job.sources_sqale_rating)
+    s << content_tag(:td, l(:label_sources_technical_debt))
+    s << content_tag(:td, render_sonarqube_report_details_cell_sqale)
+    s << content_tag(:td, l(:label_sources_code_smells))
+    s << content_tag(:td, jenkins_job.sources_code_smells)
+    return s
+  end
+
+  def render_sonarqube_report_details_cell_sqale
+    s = ''
+    s << jenkins_job.sources_sqale_index 
+    s << ' ' 
+    s << l(:label_sources_technical_debt_minutes)
     return s
   end
 
   def render_sonarqube_report_details_row4
     s = ''
     s << content_tag(:td, l(:label_sources_coverage))
-    s << content_tag(:td, jenkins_job.sources_coverage +' '+ l(:label_sources_coverage))
+    s << content_tag(:td, jenkins_job.sources_coverage)
+    s << content_tag(:td, l(:label_sources_tests))
+    s << content_tag(:td, jenkins_job.sources_tests)
+    s << content_tag(:td, l(:label_sources_skipped_tests))
+    s << content_tag(:td, jenkins_job.sources_skipped_tests)
     return s
   end
 
   def render_sonarqube_report_details_row5
     s = ''
+    s << content_tag(:td, l(:label_sources_complexity))
+    s << content_tag(:td, jenkins_job.sources_complexity)
     s << content_tag(:td, l(:label_sources_duplications))
-    s << content_tag(:td, jenkins_job.sources_vulnerabilities +' '+ l(:label_sources_duplicated_lines_density))
+    s << content_tag(:td, render_sonarqube_report_details_cell_duplicated_lines)
+    s << content_tag(:td, l(:label_sources_issues))
+    s << content_tag(:td, render_sonarqube_report_details_cell_violations )
     return s
   end
 
-  def render_sonarqube_report_details_row6
+  def render_sonarqube_report_details_cell_duplicated_lines
     s = ''
-    s << content_tag(:td, )
+    s << jenkins_job.sources_duplicated_lines_density 
+    s << ' '
+    s << l(:label_sources_duplicated_lines_density)
+    return s
+  end
+
+  def render_sonarqube_report_details_cell_violations
+    s = ''
+    s << jenkins_job.sources_violations
+    s << ' '
+    s << l(:label_sources_violations)
     return s
   end
 

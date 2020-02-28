@@ -17,7 +17,7 @@ class JenkinsJob < ActiveRecord::Base
                   # Reliability
                   :sources_reliability_rating, :sources_bugs,
                   # Security
-                  :sources_security_rating, sources_vulnerabilities,
+                  :sources_security_rating, :sources_vulnerabilities,
                   # Maintainability
                   :sources_sqale_rating, :sources_sqale_debt_ratio, 
                   :sources_sqale_index, :sources_code_smells, 
