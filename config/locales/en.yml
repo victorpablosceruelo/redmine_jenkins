@@ -71,7 +71,8 @@ en:
   label_sources_quality_gate: Quality Gate Status
   label_sources_lines: Lines of Code
   label_sources_reliability: Sources Reliability Rating
-  label_sources_bugs: Bugs in code
+  label_sources_bugs: Bugs
+  label_sources_bugs_long: Bugs in code
   label_sources_security_rating: Sources Security Rating
   label_sources_vulnerabilities: Vulnerabilities
   label_sources_maintainability: Maintainability

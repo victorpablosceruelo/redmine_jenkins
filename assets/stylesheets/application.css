@@ -74,8 +74,9 @@ th.jenkins_jobs_list_table_2nd_head {
 }
 
 td.source_quality_report_job_table_cell {
-  max-width: 20%;
-  width: min-content; 
+  max-width: 50%;
+  min-width: 40%;
+  width: 50%; 
 }
 
 table.source_code_quality_report {
@@ -85,12 +86,15 @@ table.source_code_quality_report {
 table.source_code_quality_report td{
   word-wrap: break-word;         /* All browsers since IE 5.5+ */
   overflow-wrap: break-word;     /* Renamed property in CSS3 draft spec */
-  max-width: 15%;
-  width: 15%; 
 }
 
 td.table_odd_col {
   border-left: 1px solid #dddddd;
+  width: 20%;
+}
+
+td.table_even_col {
+  width: 10%;
 }
 
 h3.ci_cd_sidebar {

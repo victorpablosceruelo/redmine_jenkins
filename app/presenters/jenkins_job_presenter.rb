@@ -65,13 +65,13 @@ class JenkinsJobPresenter < SimpleDelegator
 
     s = ''
     s << content_tag(:td, l(:label_sources_quality_gate), class: 'table_odd_col')
-    s << content_tag(:td, alert_status_to_str(jenkins_job.sources_alert_status))
+    s << content_tag(:td, alert_status_to_str(jenkins_job.sources_alert_status), class: 'table_even_col')
 
     s << content_tag(:td, l(:label_sources_lines), class: 'table_odd_col')
-    s << content_tag(:td, get_int_value(jenkins_job.sources_lines))
+    s << content_tag(:td, get_int_value(jenkins_job.sources_lines), class: 'table_even_col')
 
     s << content_tag(:td, l(:label_sources_report_last_update), class: 'table_odd_col')
-    s << content_tag(:td, convert_date_to_str(jenkins_job.sources_report_last_update))
+    s << content_tag(:td, convert_date_to_str(jenkins_job.sources_report_last_update), class: 'table_even_col')
     return s.html_safe
   end
 
@@ -84,11 +84,11 @@ class JenkinsJobPresenter < SimpleDelegator
 
     s = ''
     s << content_tag(:td, l(:label_sources_reliability), class: 'table_odd_col')
-    s << content_tag(:td, render_sonarqube_report_details_cell_reliability)
+    s << content_tag(:td, render_sonarqube_report_details_cell_reliability, class: 'table_even_col')
     s << content_tag(:td, l(:label_sources_security_rating), class: 'table_odd_col')
-    s << content_tag(:td, convert_float_to_str('security', jenkins_job.sources_security_rating))
+    s << content_tag(:td, convert_float_to_str('security', jenkins_job.sources_security_rating), class: 'table_even_col')
     s << content_tag(:td, l(:label_sources_vulnerabilities), class: 'table_odd_col')
-    s << content_tag(:td, get_int_value(jenkins_job.sources_vulnerabilities))
+    s << content_tag(:td, get_int_value(jenkins_job.sources_vulnerabilities), class: 'table_even_col')
     return s.html_safe
   end
 
@@ -115,11 +115,11 @@ class JenkinsJobPresenter < SimpleDelegator
 
     s = ''
     s << content_tag(:td, l(:label_sources_maintainability), class: 'table_odd_col')
-    s << content_tag(:td, convert_float_to_str('squale', jenkins_job.sources_sqale_rating))
+    s << content_tag(:td, convert_float_to_str('squale', jenkins_job.sources_sqale_rating), class: 'table_even_col')
     s << content_tag(:td, l(:label_sources_technical_debt), class: 'table_odd_col')
-    s << content_tag(:td, render_sonarqube_report_details_cell_sqale)
+    s << content_tag(:td, render_sonarqube_report_details_cell_sqale, class: 'table_even_col')
     s << content_tag(:td, l(:label_sources_code_smells), class: 'table_odd_col')
-    s << content_tag(:td, get_int_value(jenkins_job.sources_code_smells))
+    s << content_tag(:td, get_int_value(jenkins_job.sources_code_smells), class: 'table_even_col')
     return s.html_safe
   end
 
@@ -147,11 +147,11 @@ class JenkinsJobPresenter < SimpleDelegator
 
     s = ''
     s << content_tag(:td, l(:label_sources_coverage), class: 'table_odd_col')
-    s << content_tag(:td, get_int_value(jenkins_job.sources_coverage))
+    s << content_tag(:td, get_int_value(jenkins_job.sources_coverage), class: 'table_even_col')
     s << content_tag(:td, l(:label_sources_tests), class: 'table_odd_col')
-    s << content_tag(:td, get_int_value(jenkins_job.sources_tests))
+    s << content_tag(:td, get_int_value(jenkins_job.sources_tests), class: 'table_even_col')
     s << content_tag(:td, l(:label_sources_skipped_tests), class: 'table_odd_col')
-    s << content_tag(:td, get_int_value(jenkins_job.sources_skipped_tests))
+    s << content_tag(:td, get_int_value(jenkins_job.sources_skipped_tests), class: 'table_even_col')
     return s.html_safe
   end
 
@@ -161,12 +161,12 @@ class JenkinsJobPresenter < SimpleDelegator
     end
 
     s = ''
-    s << content_tag(:td, l(:label_sources_complexity))
-    s << content_tag(:td, get_int_value(jenkins_job.sources_complexity))
-    s << content_tag(:td, l(:label_sources_duplications))
-    s << content_tag(:td, render_sonarqube_report_details_cell_duplicated_lines)
-    s << content_tag(:td, l(:label_sources_issues))
-    s << content_tag(:td, render_sonarqube_report_details_cell_violations )
+    s << content_tag(:td, l(:label_sources_complexity), class: 'table_odd_col')
+    s << content_tag(:td, get_int_value(jenkins_job.sources_complexity), class: 'table_even_col')
+    s << content_tag(:td, l(:label_sources_duplications), class: 'table_odd_col')
+    s << content_tag(:td, render_sonarqube_report_details_cell_duplicated_lines, class: 'table_even_col')
+    s << content_tag(:td, l(:label_sources_issues), class: 'table_odd_col')
+    s << content_tag(:td, render_sonarqube_report_details_cell_violations, class: 'table_even_col')
     return s.html_safe
   end
 
