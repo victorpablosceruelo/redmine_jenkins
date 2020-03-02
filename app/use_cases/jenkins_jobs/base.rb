@@ -323,17 +323,24 @@ module JenkinsJobs
         if (nil == jsonResult['component']['measures'])
           @errors << 'No measures section in component section, in json retrieved: ' + jsonResult
         end
+
+        no_metric_read=true
         jsonResult['component']['measures'].each do |measure|
           metricName = measure["metric"]
           metricValue = measure["value"]
           if (! update_jenkins_job_metric(metricName, metricValue))
             @errors << "Retrieved metric has no valid name. Value not saved. Measure json: #{measure}"
+          else
+            no_metric_read=false
           end
         end
 
-        # jenkins_job.sonarqube_dashboard_url = sonarqube_dashboard_url
-        jenkins_job.save!
-        jenkins_job.reload
+        if (! no_metric_read)
+          jenkins_job.sources_report_last_update = Time.new
+          # jenkins_job.sonarqube_dashboard_url = sonarqube_dashboard_url
+          jenkins_job.save!
+          jenkins_job.reload
+        end
 
       end
 

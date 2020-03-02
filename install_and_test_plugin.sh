@@ -10,6 +10,12 @@ echo " "
 http_proxy=http://10.254.250.94:3128/
 https_proxy=http://10.254.250.94:3128/
 
+systemctl stop httpd
+systemctl status httpd
+
+echo "" > /var/log/httpd/access_log ; 
+echo "" > /var/log/httpd/error_log ; 
+echo "" > /var/www/redmine-4.0/log/production.log
 
 pushd /var/www/redmine-4.0/plugins/redmine_jenkins
 
@@ -29,9 +35,7 @@ popd
 
 echo "Restarting httpd..."
 
-systemctl stop httpd 
 systemctl start httpd
-
 systemctl status httpd
 
 echo " "
@@ -40,5 +44,7 @@ echo "tail -f -n 100 /var/log/httpd/error_log /var/www/redmine-4.0/log/productio
 echo " "
 echo " "
 
-tail -f -n 100 /var/log/httpd/error_log /var/www/redmine-4.0/log/production.log
+tail -f -n 100 /var/log/httpd/access_log /var/www/redmine-4.0/log/production.log /var/log/httpd/error_log
+
+echo " "
 

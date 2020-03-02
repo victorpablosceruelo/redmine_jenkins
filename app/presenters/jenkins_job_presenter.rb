@@ -32,7 +32,7 @@ class JenkinsJobPresenter < SimpleDelegator
     if (!('' == jenkins_job.sonarqube_dashboard_url))
       s = ''
       s << content_tag(:span, link_to_sonarqube_dashboard_url(jenkins_job.sonarqube_dashboard_url).html_safe)
-      s << content_tag(:table, render_sonarqube_report_details)
+      s << content_tag(:table, render_sonarqube_report_details, class: 'source_code_quality_report')
       return s.html_safe
     else
       return content_tag(:span, l(:label_no_sonarqube_report_available))
@@ -40,14 +40,18 @@ class JenkinsJobPresenter < SimpleDelegator
   end
 
   def render_sonarqube_report_details
+    if (jenkins_job == nil)
+      return ""
+    end
+
     s = ''
-    s << content_tag(:tr, render_sonarqube_report_details_row1)
+    s << content_tag(:tr, render_sonarqube_report_details_row1, class: 'table_odd_row')
     s << content_tag(:tr, render_sonarqube_report_details_row2)
-    s << content_tag(:tr, render_sonarqube_report_details_row3)
+    s << content_tag(:tr, render_sonarqube_report_details_row3, class: 'table_odd_row')
     s << content_tag(:tr, render_sonarqube_report_details_row4)
     # s << content_tag(:tr, render_sonarqube_report_details_row5)
     # s << content_tag(:tr, render_sonarqube_report_details_row6)
-    return s
+    return s.html_safe
   end
 
   #:sources_vulnerabilities, :sources_bugs, :sources_code_smells, :sources_sqale_index,
@@ -55,94 +59,248 @@ class JenkinsJobPresenter < SimpleDelegator
   #                :sources_alert_status, :sources_lines, :sources_tests, :sources_skipped_tests,
   #                :sources_complexity
   def render_sonarqube_report_details_row1
-    s = ''
-    s << content_tag(:td, l(:label_sources_quality_gate))
-    s << content_tag(:td, jenkins_job.sources_alert_status)
+    if (jenkins_job == nil)
+      return ""
+    end
 
-    s << content_tag(:td, l(:label_sources_lines))
-    s << content_tag(:td, jenkins_job.sources_lines)
-    s << content_tag(:td, l(:label_sources_reliability))
+    s = ''
+    s << content_tag(:td, l(:label_sources_quality_gate), class: 'table_odd_col')
+    s << content_tag(:td, alert_status_to_str(jenkins_job.sources_alert_status))
+
+    s << content_tag(:td, l(:label_sources_lines), class: 'table_odd_col')
+    s << content_tag(:td, get_int_value(jenkins_job.sources_lines))
+
+    s << content_tag(:td, l(:label_sources_report_last_update), class: 'table_odd_col')
+    s << content_tag(:td, convert_date_to_str(jenkins_job.sources_report_last_update))
+    return s.html_safe
+  end
+
+
+
+  def render_sonarqube_report_details_row2
+    if (jenkins_job == nil)
+      return ""
+    end
+
+    s = ''
+    s << content_tag(:td, l(:label_sources_reliability), class: 'table_odd_col')
     s << content_tag(:td, render_sonarqube_report_details_cell_reliability)
-    return s
+    s << content_tag(:td, l(:label_sources_security_rating), class: 'table_odd_col')
+    s << content_tag(:td, convert_float_to_str('security', jenkins_job.sources_security_rating))
+    s << content_tag(:td, l(:label_sources_vulnerabilities), class: 'table_odd_col')
+    s << content_tag(:td, get_int_value(jenkins_job.sources_vulnerabilities))
+    return s.html_safe
   end
 
   def render_sonarqube_report_details_cell_reliability
+    if (jenkins_job == nil)
+      return ""
+    end
+
     s = ''
-    s << jenkins_job.sources_reliability_rating 
-    s << '('
-    s <<  jenkins_job.sources_bugs 
+    s << convert_float_to_str('reliability', jenkins_job.sources_reliability_rating)
+    s << '<BR>'.html_safe
+    s << ' ('
+    s << get_int_value(jenkins_job.sources_bugs)
     s << ' ' 
     s << l(:label_sources_bugs) 
     s << ')'
-    return s
-  end
-
-  def render_sonarqube_report_details_row2
-    s = ''
-    s << content_tag(:td, l(:label_sources_security_rating))
-    s << content_tag(:td, jenkins_job.sources_security_rating)
-    s << content_tag(:td, l(:label_sources_vulnerabilities))
-    s << content_tag(:td, jenkins_job.sources_vulnerabilities)
-    s << content_tag(:td, ' ')
-    s << content_tag(:td, ' ')
-    return s
+    return s.html_safe
   end
 
   def render_sonarqube_report_details_row3
+    if (jenkins_job == nil)
+      return ""
+    end
+
     s = ''
-    s << content_tag(:td, l(:label_sources_maintainability))
-    s << content_tag(:td, jenkins_job.sources_sqale_rating)
-    s << content_tag(:td, l(:label_sources_technical_debt))
+    s << content_tag(:td, l(:label_sources_maintainability), class: 'table_odd_col')
+    s << content_tag(:td, convert_float_to_str('squale', jenkins_job.sources_sqale_rating))
+    s << content_tag(:td, l(:label_sources_technical_debt), class: 'table_odd_col')
     s << content_tag(:td, render_sonarqube_report_details_cell_sqale)
-    s << content_tag(:td, l(:label_sources_code_smells))
-    s << content_tag(:td, jenkins_job.sources_code_smells)
-    return s
+    s << content_tag(:td, l(:label_sources_code_smells), class: 'table_odd_col')
+    s << content_tag(:td, get_int_value(jenkins_job.sources_code_smells))
+    return s.html_safe
   end
 
   def render_sonarqube_report_details_cell_sqale
+    if (jenkins_job == nil)
+      return ""
+    end
+
     s = ''
-    s << jenkins_job.sources_sqale_index 
+    s << get_int_value(jenkins_job.sources_sqale_index)
     s << ' ' 
     s << l(:label_sources_technical_debt_minutes)
-    return s
+    s << '<BR>'.html_safe
+    s << '('
+    s << '&#126;'.html_safe
+    s << minutes_to_hours(jenkins_job.sources_sqale_index)
+    s << ' h)' 
+    return s.html_safe
   end
 
   def render_sonarqube_report_details_row4
+    if (jenkins_job == nil)
+      return ""
+    end
+
     s = ''
-    s << content_tag(:td, l(:label_sources_coverage))
-    s << content_tag(:td, jenkins_job.sources_coverage)
-    s << content_tag(:td, l(:label_sources_tests))
-    s << content_tag(:td, jenkins_job.sources_tests)
-    s << content_tag(:td, l(:label_sources_skipped_tests))
-    s << content_tag(:td, jenkins_job.sources_skipped_tests)
-    return s
+    s << content_tag(:td, l(:label_sources_coverage), class: 'table_odd_col')
+    s << content_tag(:td, get_int_value(jenkins_job.sources_coverage))
+    s << content_tag(:td, l(:label_sources_tests), class: 'table_odd_col')
+    s << content_tag(:td, get_int_value(jenkins_job.sources_tests))
+    s << content_tag(:td, l(:label_sources_skipped_tests), class: 'table_odd_col')
+    s << content_tag(:td, get_int_value(jenkins_job.sources_skipped_tests))
+    return s.html_safe
   end
 
   def render_sonarqube_report_details_row5
+    if (jenkins_job == nil)
+      return ""
+    end
+
     s = ''
     s << content_tag(:td, l(:label_sources_complexity))
-    s << content_tag(:td, jenkins_job.sources_complexity)
+    s << content_tag(:td, get_int_value(jenkins_job.sources_complexity))
     s << content_tag(:td, l(:label_sources_duplications))
     s << content_tag(:td, render_sonarqube_report_details_cell_duplicated_lines)
     s << content_tag(:td, l(:label_sources_issues))
     s << content_tag(:td, render_sonarqube_report_details_cell_violations )
-    return s
+    return s.html_safe
   end
 
   def render_sonarqube_report_details_cell_duplicated_lines
+    if (jenkins_job == nil)
+      return ""
+    end
+
     s = ''
-    s << jenkins_job.sources_duplicated_lines_density 
+    s << get_int_value(jenkins_job.sources_duplicated_lines_density)
     s << ' '
     s << l(:label_sources_duplicated_lines_density)
-    return s
+    return s.html_safe
   end
 
   def render_sonarqube_report_details_cell_violations
+    if (jenkins_job == nil)
+      return ""
+    end
+
     s = ''
-    s << jenkins_job.sources_violations
+    s << get_int_value(jenkins_job.sources_violations)
     s << ' '
     s << l(:label_sources_violations)
-    return s
+    return s.html_safe
+  end
+
+  def convert_date_to_str(date_value)
+    if (date_value == nil)
+      return "never"
+    end
+    date_value.strftime('%Y/%m/%d %H:%M')
+  end
+
+  def convert_float_to_str(index_name, index_value)
+    if ((nil == index_name) || (nil == index_value))
+      return l(:label_sources_report_cell_no_data)
+    end
+    case index_name
+    when 'squale' # maintainability
+      if (index_value <= 5)
+        return symbol_A
+      elsif ((index_value > 6) && (index_value < 10))
+        return symbol_B
+      elsif ((index_value > 11) && (index_value < 20))
+        return symbol_C
+      elsif ((index_value > 21) && (index_value < 50))
+        return symbol_D
+      else
+        return symbol_E
+      end
+    when 'reliability'
+      if (index_value == 1)
+        return symbol_A
+      elsif ((index_value > 1) && (index_value <= 2))
+        return symbol_B
+      elsif ((index_value > 2) && (index_value <= 3))
+        return symbol_C
+      elsif ((index_value > 3) && (index_value <= 4))
+        return symbol_D
+      else
+        return symbol_E
+      end
+    when 'security'
+      if (index_value > 0.8)
+        return symbol_A
+      elsif ((index_value > 0.7) && (index_value < 0.8))
+        return symbol_B
+      elsif ((index_value > 0.5) && (index_value < 0.7))
+        return symbol_C
+      elsif ((index_value > 0.3) && (index_value < 0.5))
+        return symbol_D
+      else
+        return symbol_E
+      end
+    else
+      return index_value.to_s
+    end
+  end
+
+  def symbol_A
+    content_tag(:span,'A',class: 'symbol_A').html_safe
+  end
+
+  def symbol_B
+    content_tag(:span,'B',class: 'symbol_B').html_safe
+  end
+
+  def symbol_C
+    content_tag(:span,'C',class: 'symbol_C').html_safe
+  end
+
+  def symbol_D
+    content_tag(:span,'D',class: 'symbol_D').html_safe
+  end
+
+  def symbol_E
+    content_tag(:span,'E',class: 'symbol_E').html_safe
+  end
+
+  def get_int_value(value_in)
+    if ((value_in == nil) || (value_in == ''))
+      return '0' 
+    else 
+      if (value_in.is_a? String)
+        if (value_in.strip == '')
+          return '0'
+        end
+      else
+        return value_in.to_s
+      end
+    end
+  end
+
+  def minutes_to_hours(value_in)
+    if ((value_in == nil) || (value_in == ''))
+      return '0' 
+    else 
+      if (value_in.is_a? String)
+        if (value_in.strip == '')
+          return '0'
+        end
+      else
+        return (value_in / 60).to_s
+      end
+    end
+  end
+
+  def alert_status_to_str(alert_status)
+    if ((alert_status == nil) || (alert_status == ''))
+      return l(:label_sources_report_cell_no_data)
+    end
+
+    return alert_status
   end
 
   def latest_changesets

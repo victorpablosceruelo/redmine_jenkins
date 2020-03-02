@@ -67,6 +67,28 @@ en:
   field_job_name: Job name
   field_builds_to_keep: Builds to keep
 
+  ### Quality in sources
+  label_sources_quality_gate: Quality Gate Status
+  label_sources_lines: Lines of Code
+  label_sources_reliability: Sources Reliability Rating
+  label_sources_bugs: Bugs in code
+  label_sources_security_rating: Sources Security Rating
+  label_sources_vulnerabilities: Vulnerabilities
+  label_sources_maintainability: Maintainability
+  label_sources_technical_debt: Technical Debt
+  label_sources_code_smells: Code Smells
+  label_sources_technical_debt_minutes: mins
+  label_sources_coverage: Coverage
+  label_sources_tests: Tests
+  label_sources_skipped_tests: Skipped Tests
+  label_sources_complexity: Complexity
+  label_sources_duplications: Duplications
+  label_sources_issues: Issues
+  label_sources_duplicated_lines_density: Duplicated Lines Density
+  label_sources_violations: Violations
+  label_sources_report_cell_no_data: no data 
+  label_sources_report_last_update: Last Update on
+
   ### ACTIVITY
   label_build: Build
 
