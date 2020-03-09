@@ -31,8 +31,9 @@ class JenkinsJobPresenter < SimpleDelegator
   def render_sonarqube_report
     if (!('' == jenkins_job.sonarqube_dashboard_url))
       s = ''
-      s << content_tag(:span, link_to_sonarqube_dashboard_url(jenkins_job.sonarqube_dashboard_url).html_safe)
       s << content_tag(:table, render_sonarqube_report_details, class: 'source_code_quality_report')
+      s << content_tag(:span, last_data_update_warning_msg)
+      s << content_tag(:span, link_to_sonarqube_dashboard_url(jenkins_job.sonarqube_dashboard_url).html_safe)
       return s.html_safe
     else
       return content_tag(:span, l(:label_no_sonarqube_report_available))
@@ -48,7 +49,7 @@ class JenkinsJobPresenter < SimpleDelegator
     s << content_tag(:tr, render_sonarqube_report_details_row1, class: 'table_odd_row')
     s << content_tag(:tr, render_sonarqube_report_details_row2)
     s << content_tag(:tr, render_sonarqube_report_details_row3, class: 'table_odd_row')
-    s << content_tag(:tr, render_sonarqube_report_details_row4)
+    # s << content_tag(:tr, render_sonarqube_report_details_row4)
     # s << content_tag(:tr, render_sonarqube_report_details_row5)
     # s << content_tag(:tr, render_sonarqube_report_details_row6)
     return s.html_safe
@@ -70,12 +71,14 @@ class JenkinsJobPresenter < SimpleDelegator
     s << content_tag(:td, l(:label_sources_lines), class: 'table_odd_col')
     s << content_tag(:td, get_int_value(jenkins_job.sources_lines), class: 'table_even_col')
 
-    s << content_tag(:td, l(:label_sources_report_last_update), class: 'table_odd_col')
-    s << content_tag(:td, convert_date_to_str(jenkins_job.sources_report_last_update), class: 'table_even_col')
+    s << content_tag(:td, l(:label_sources_jenkins_build_date), class: 'table_odd_col')
+    s << content_tag(:td, last_analysis_date, class: 'table_even_col')
     return s.html_safe
   end
 
-
+  def last_analysis_date
+    convert_date_to_str(jenkins_job.sources_jenkins_build_date)
+  end
 
   def render_sonarqube_report_details_row2
     if (jenkins_job == nil)
@@ -87,8 +90,8 @@ class JenkinsJobPresenter < SimpleDelegator
     s << content_tag(:td, render_sonarqube_report_details_cell_reliability, class: 'table_even_col')
     s << content_tag(:td, l(:label_sources_security_rating), class: 'table_odd_col')
     s << content_tag(:td, convert_float_to_str('security', jenkins_job.sources_security_rating), class: 'table_even_col')
-    s << content_tag(:td, l(:label_sources_vulnerabilities), class: 'table_odd_col')
-    s << content_tag(:td, get_int_value(jenkins_job.sources_vulnerabilities), class: 'table_even_col')
+    s << content_tag(:td, l(:label_sources_maintainability), class: 'table_odd_col')
+    s << content_tag(:td, convert_float_to_str('squale', jenkins_job.sources_sqale_rating), class: 'table_even_col')
     return s.html_safe
   end
 
@@ -99,23 +102,23 @@ class JenkinsJobPresenter < SimpleDelegator
 
     s = ''
     s << convert_float_to_str('reliability', jenkins_job.sources_reliability_rating)
-    s << '<BR>'.html_safe
-    s << ' ('
-    s << get_int_value(jenkins_job.sources_bugs)
-    s << ' ' 
-    s << l(:label_sources_bugs) 
-    s << ')'
+    # s << '<BR>'.html_safe
+    # s << ' ('
+    # s << get_int_value(jenkins_job.sources_bugs)
+    # s << ' ' 
+    # s << l(:label_sources_bugs) 
+    # s << ')'
     return s.html_safe
   end
 
-  def render_sonarqube_report_details_row3
+  def render_sonarqube_report_details_row4
     if (jenkins_job == nil)
       return ""
     end
 
     s = ''
-    s << content_tag(:td, l(:label_sources_maintainability), class: 'table_odd_col')
-    s << content_tag(:td, convert_float_to_str('squale', jenkins_job.sources_sqale_rating), class: 'table_even_col')
+    s << content_tag(:td, l(:label_sources_vulnerabilities), class: 'table_odd_col')
+    s << content_tag(:td, get_int_value(jenkins_job.sources_vulnerabilities), class: 'table_even_col')
     s << content_tag(:td, l(:label_sources_technical_debt), class: 'table_odd_col')
     s << content_tag(:td, render_sonarqube_report_details_cell_sqale, class: 'table_even_col')
     s << content_tag(:td, l(:label_sources_code_smells), class: 'table_odd_col')
@@ -140,7 +143,7 @@ class JenkinsJobPresenter < SimpleDelegator
     return s.html_safe
   end
 
-  def render_sonarqube_report_details_row4
+  def render_sonarqube_report_details_row3
     if (jenkins_job == nil)
       return ""
     end
@@ -488,4 +491,7 @@ class JenkinsJobPresenter < SimpleDelegator
       end
     end
 
+    def last_data_update_warning_msg()
+      l(:last_data_update_warning_msg, date: convert_date_to_str(jenkins_job.sources_report_last_update))
+    end
 end

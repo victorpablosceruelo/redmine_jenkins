@@ -89,6 +89,8 @@ en:
   label_sources_violations: Violations
   label_sources_report_cell_no_data: no data 
   label_sources_report_last_update: Last Update on
+  last_data_update_warning_msg: "Last update of the info shown here was on %{date}. Press refresh to see more up-to-date results."
+  label_sources_jenkins_build_date: Jenkins' last build date 
 
   ### ACTIVITY
   label_build: Build
