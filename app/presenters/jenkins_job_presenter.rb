@@ -32,8 +32,8 @@ class JenkinsJobPresenter < SimpleDelegator
     if (!('' == jenkins_job.sonarqube_dashboard_url))
       s = ''
       s << content_tag(:table, render_sonarqube_report_details, class: 'source_code_quality_report')
-      s << content_tag(:span, last_data_update_warning_msg)
-      s << content_tag(:span, link_to_sonarqube_dashboard_url(jenkins_job.sonarqube_dashboard_url).html_safe)
+      s << content_tag(:span, last_data_update_warning_msg, class: 'last_data_update_warning_msg')
+      s << content_tag(:span, link_to_sonarqube_dashboard_url(jenkins_job.sonarqube_dashboard_url).html_safe, class: 'link_to_sonarqube_dashboard_url')
       return s.html_safe
     else
       return content_tag(:span, l(:label_no_sonarqube_report_available))
@@ -77,7 +77,7 @@ class JenkinsJobPresenter < SimpleDelegator
   end
 
   def last_analysis_date
-    convert_date_to_str(jenkins_job.sources_jenkins_build_date)
+    convert_date_to_str(jenkins_job.latest_build_date)
   end
 
   def render_sonarqube_report_details_row2
