@@ -17,11 +17,18 @@ module JenkinsHelper
     end
   end
 
-  def state_to_label(state)
-    state.gsub('_', ' ').capitalize
+  def jenkins_job_state_to_label(state)
+	if !state.nil?
+		return state.gsub('_', ' ').capitalize
+	end
+	''
   end
 
   def state_color_to_image(state_color, description)
+	if state_color.blank?
+		return ''
+	end
+
     image_fileextension = ".png"
     if state_color.downcase.include?('anime')
       image_fileextension = ".gif"
@@ -67,10 +74,13 @@ module JenkinsHelper
 
 
   def link_to_jenkins_job_latest_build_console(job)
-    url    = job.latest_build_number == 0 ? 'javascript:void(0);' : job.latest_build_url + '/console'
-    target = job.latest_build_number == 0 ? '' : '_blank'
-    link_to jenkins_logs_icon, url, target: target
-    # Attributes included in image: longdesc: longdesc, alt: longdesc, title: longdesc
+	if ! job.latest_build_number.nil?
+    		url    = job.latest_build_number == 0 ? 'javascript:void(0);' : job.latest_build_url + '/console'
+    		target = job.latest_build_number == 0 ? '' : '_blank'
+    		return link_to jenkins_logs_icon, url, target: target
+    		# Attributes included in image: longdesc: longdesc, alt: longdesc, title: longdesc
+	end
+	''
   end
 
 

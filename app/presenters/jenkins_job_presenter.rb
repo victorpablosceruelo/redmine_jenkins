@@ -342,7 +342,7 @@ class JenkinsJobPresenter < SimpleDelegator
 
 
     def render_jenkins_job_latest_build_link_and_state(jenkins_job)
-      img_desc = l(:label_job_build_state) + ": " + state_to_label(jenkins_job.state) + " (" + jenkins_job.state_color + ")"
+      img_desc = get_job_latest_build_image_description(jenkins_job)
 
       s = ''
       s << content_tag(:span, link_to_jenkins_job_latest_build(jenkins_job).html_safe, class: 'label label-info')
@@ -352,13 +352,29 @@ class JenkinsJobPresenter < SimpleDelegator
       s.html_safe
     end
 
+    def get_job_latest_build_image_description(jenkins_job)
+	s = ''
+	if (! jenkins_job.state.blank?)
+		s << l(:label_job_build_state)
+		s << ": "
+		s << jenkins_job_state_to_label(jenkins_job.state)
+		if (! jenkins_job.state_color.nil?) and (! jenkins_job.state_color.empty?)
+       			s << " (" 
+			s << jenkins_job.state_color
+	 		s << ")"
+		end
+	end
+	s.html_safe
+    end 
 
     def latest_build_duration
-      s = ''
-      s << l(:label_job_duration)
-      s << ': '
-      s << Time.at(jenkins_job.latest_build_duration/1000).strftime("%M:%S") rescue "00:00"
-      s.html_safe
+	s = ''
+	if !jenkins_job.latest_build_duration.nil?
+		s << l(:label_job_duration)
+		s << ': '
+		s << Time.at(jenkins_job.latest_build_duration/1000).strftime("%M:%S") rescue "00:00"
+	end
+	s.html_safe
     end
 
     def job_actions_list
@@ -376,7 +392,9 @@ class JenkinsJobPresenter < SimpleDelegator
 
     def render_job_description
       s = ''
-      s << jenkins_job.description
+      if (!jenkins_job.nil?) and (!jenkins_job.description.nil?)
+      	 s << jenkins_job.description
+      end
       s
     end
 
@@ -400,7 +418,13 @@ class JenkinsJobPresenter < SimpleDelegator
     end
 
     def latest_build_date
-      l(:label_finished_at) + ": #{format_time(jenkins_job.latest_build_date)}"
+	s = ''
+	if ! jenkins_job.latest_build_date.nil?
+		s << l(:label_finished_at) 
+		s << ": " 
+		s << "#{format_time(jenkins_job.latest_build_date)}"
+	end
+	s.html_safe
     end
 
 
