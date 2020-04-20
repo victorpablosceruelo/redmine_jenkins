@@ -230,6 +230,9 @@ module JenkinsJobs
 
         begin
           sonarqube_api_url = jenkins_job.sonarqube_dashboard_url
+	  if sonarqube_api_url.nil?
+		  raise RedmineJenkins::Error::JenkinsConnectionError, 'No SonarQube url available. Could not retrieve metrics.'
+	  end
           sonarqube_api_url = sonarqube_api_url.gsub("dashboard?id=", "api/measures/component?component=")
           sonarqube_api_url = sonarqube_api_url + "&metricKeys=" +
             "alert_status,lines,reliability_rating,bugs,security_rating,vulnerabilities," +
