@@ -96,6 +96,7 @@ module JenkinsJobs
         end
 
         clean_up_builds
+	return true
       end
 
 
@@ -152,17 +153,17 @@ module JenkinsJobs
       def create_changeset_if_possible(build, build_details)
         ## Update changesets. Be careful: sometimes the answer does not have them ... 
         if (build_details['changeSet'] == nil)
-          errorMsg = "Could not create changeSet: changeSet not available in Jenkins response. Jenkins Response: \n"
+          errorMsg = "Could not create changeSet: changeSet not available in Jenkins response. \n"
           @logger.warn errorMsg
           # @errors << errorMsg
-          @logger.warn build_details
+          @logger.debug "Jenkins response: #{build_details} "
         else
           changeSet = build_details['changeSet']
           if (changeSet['items'] == nil)
-            errorMsg = "Could not create changeSet: changeSetItems not available in Jenkins response. Jenkins Response: \n"
+            errorMsg = "Could not create changeSet: changeSetItems not available in Jenkins response. \n"
             @logger.warn errorMsg
             # @errors << errorMsg
-            @logger.warn build_details
+            @logger.debug "Jenkins response: #{build_details} "
           else
             changeSetItems = changeSet['items']
             create_changeset(build, changeSetItems)
@@ -173,8 +174,8 @@ module JenkinsJobs
 
       def getSonarqubeDashboardUrl(build_details)
         begin
-          @logger.info "build_details:"
-          @logger.info build_details
+          @logger.debug "build_details: #{build_details} "
+
           build_details.each do |key, build_detail_array|
             sonarqube_dashboard_url = getSonarqubeDashboardUrlAux(key, build_detail_array)
             if (! ('' == sonarqube_dashboard_url))
@@ -230,6 +231,9 @@ module JenkinsJobs
 
         begin
           sonarqube_api_url = jenkins_job.sonarqube_dashboard_url
+	  if sonarqube_api_url.nil?
+		  raise RedmineJenkins::Error::JenkinsConnectionError, 'No SonarQube url available. Could not retrieve metrics.'
+	  end
           sonarqube_api_url = sonarqube_api_url.gsub("dashboard?id=", "api/measures/component?component=")
           sonarqube_api_url = sonarqube_api_url + "&metricKeys=" +
             "alert_status,lines,reliability_rating,bugs,security_rating,vulnerabilities," +
@@ -286,17 +290,14 @@ module JenkinsJobs
           # request.basic_auth '#{jenkins_job.jenkins_auth_user}', '#{jenkins_job.jenkins_auth_password}'
           request['Authorization'] = authorization_header
           
-          @logger.info 'request'
-          @logger.info request
-          @logger.info 'request[Authorization]: ' + request['Authorization']
+          @logger.info "request: #{request}"
+          @logger.info "request[Authorization]: #{request['Authorization']}"
 
           response = http.request request # Net::HTTPResponse object
         
-          @logger.info 'response'
-          @logger.info response
+          @logger.info "response: #{response} "
         }
-        @logger.info 'response'
-        @logger.info response
+        @logger.info "response: #{response} "
 
         case response
         when Net::HTTPSuccess then
@@ -308,10 +309,10 @@ module JenkinsJobs
           @errors << errorMsg
           return fetch_url(location, limit - 1)
         else
-          errorMsg = "Server returned error when querying url: #{url} (#{uri.path})."
+	  @logger.warn "response: #{response} "
+          errorMsg = "Server returned error when querying url: #{url} (#{uri.path}). #{response}"
           @logger.warn errorMsg
           @errors << errorMsg
-          @logger.warn response
           return nil
         end
       end
@@ -398,6 +399,9 @@ module JenkinsJobs
 
 
       def too_much_builds?
+	if jenkins_job.builds.nil?
+		return false
+	end
         jenkins_job.builds.size > jenkins_job.builds_to_keep
       end
 
@@ -430,11 +434,10 @@ module JenkinsJobs
       def get_jenkins_build_details(build_number)
         begin
           data = jenkins_client.job.get_build_details(jenkins_job.name2url, build_number)
+	  return data
         rescue => e
           @errors << e.message
-          nil
-        else
-          data
+          return nil
         end
       end
 
