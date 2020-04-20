@@ -12,7 +12,6 @@ class JenkinsJobsController < ApplicationController
   helper :redmine_bootstrap_kit
   helper :jenkins
 
-
   def show
     render_404
   end
@@ -25,6 +24,7 @@ class JenkinsJobsController < ApplicationController
 
 
   def create
+	  logger.info "JenkinsJobsController::create"
     @job = @project.jenkins_jobs.new(params[:jenkins_jobs])
     if @job.save
       flash[:notice] = l(:notice_job_added)
@@ -32,7 +32,8 @@ class JenkinsJobsController < ApplicationController
       flash[:error] = result.message_on_errors if !result.success?
       render_js_redirect
     else
-      @jobs = available_jobs
+	    logger.error "Could NOT create job."
+	    @jobs = available_jobs
     end
   end
 
@@ -43,13 +44,15 @@ class JenkinsJobsController < ApplicationController
 
 
   def update
+	  logger.info "JenkinsJobsController::update"
     if @job.update_attributes(params[:jenkins_jobs])
       flash[:notice] = l(:notice_job_updated)
       result = BuildManager.update_all_builds!(@job)
       flash[:error] = result.message_on_errors if !result.success?
       render_js_redirect
     else
-      @jobs = available_jobs
+	    logger.error "Could NOT update job."
+	    @jobs = available_jobs
     end
   end
 
@@ -107,6 +110,9 @@ class JenkinsJobsController < ApplicationController
 
 
     def render_js_redirect
+	logger.info "JenkinsJobsController::render_js_redirect"
+	logger.info "window.location = #{success_url.to_json};"
+
       respond_to do |format|
         format.js { render js: "window.location = #{success_url.to_json};" }
       end
