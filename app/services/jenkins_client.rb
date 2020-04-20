@@ -64,15 +64,15 @@ class JenkinsClient
       job_name = job["name"]
       new_prefix = compute_new_prefix(prefix, job_name)
 
-      @logger.info "get_jobs_list: If isFolder('#{job["name"]}') -> getSubfolders "
-      @logger.info "'#{job}'"
+      @logger.debug "get_jobs_list: If isFolder('#{job["name"]}') -> getSubfolders "
+      @logger.debug "JSON: '#{job}'"
 
 
       if job["_class"] == "com.cloudbees.hudson.plugins.folder.Folder"
         job_suburl = name2url(new_prefix)
         @logger.info "Job is a folder. Getting details of folder '#{new_prefix}' ('#{job_suburl}'): "
         details_response_json = connection.job.list_details(job_suburl)
-        @logger.info "'#{details_response_json}'"
+        @logger.debug "Response JSON: '#{details_response_json}'"
         
         jobs_accumulator = get_jobs_list_aux(details_response_json["jobs"], new_prefix, jobs_accumulator) rescue jobs_accumulator
       else
