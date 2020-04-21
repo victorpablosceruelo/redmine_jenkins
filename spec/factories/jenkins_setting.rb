@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
 
   factory :jenkins_setting do |f|
     f.url { Faker::Internet.url }

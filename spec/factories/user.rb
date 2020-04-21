@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
 
   factory :user do |f|
     f.login              { Faker::Internet.user_name(nil, %w(-)) }

@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
 
   factory :repository_git, :class => 'Repository::Git' do |f|
     f.is_default     false

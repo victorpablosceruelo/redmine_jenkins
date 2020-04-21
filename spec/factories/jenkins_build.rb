@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
 
   factory :jenkins_build do |f|
     f.number       { Faker::Number.number(3) }
