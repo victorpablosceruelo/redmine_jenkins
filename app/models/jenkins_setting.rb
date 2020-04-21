@@ -4,11 +4,8 @@ class JenkinsSetting < ActiveRecord::Base
   ## Relations
   belongs_to :project
 
-  attr_accessible :url, :auth_user, :auth_password, :show_compact, :wait_for_build_id
-
   ## Validations
   validates :project_id, presence: true, uniqueness: true
-  validates :url,        presence: true
 
 
   def jenkins_connection
@@ -30,6 +27,25 @@ class JenkinsSetting < ActiveRecord::Base
     jenkins_client.number_of_builds_for(job_name)
   end
 
+  def auth_user
+	return 'IamAdmin'
+  end
+
+  def auth_password
+	return 'IamAdmin'
+  end
+
+  def url
+	return 'http://not.configured.yet'
+  end
+
+  def show_compact
+	return false
+  end
+
+  def wait_for_build_id
+	return false
+  end
 
   private
 
