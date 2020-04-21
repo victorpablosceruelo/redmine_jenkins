@@ -28,16 +28,45 @@ class JenkinsSetting < ActiveRecord::Base
   end
 
   def auth_user
-	return 'IamAdmin'
+	  tmp = ENV["JENKINS_USER"]
+	  if ! tmp.blank?
+		  return tmp
+	  end
+	  return 'JenkinsUserName' 
   end
 
   def auth_password
-	return 'IamAdmin'
+	  tmp = ENV["JENKINS_PWD"]
+          if ! tmp.blank?
+                  return tmp
+          end
+	  return 'JenkinsUserPwd'
   end
 
   def url
-	return 'http://not.configured.yet'
+	  tmp = ENV["JENKINS_URL"]
+          if ! tmp.blank?
+                  return tmp
+          end
+	  return 'http://not.configured.yet'
   end
+
+  def sonarqube_auth_user
+          tmp = ENV["SONARQUBE_USER"]
+          if ! tmp.blank?
+                  return tmp
+          end
+          return 'SonarQubeUserName'
+  end
+
+  def sonarqube_auth_password
+          tmp = ENV["SONARQUBE_PWD"]
+          if ! tmp.blank?
+                  return tmp
+          end
+          return 'SonarQubeUserPwd'
+  end
+
 
   def show_compact
 	return false
@@ -51,7 +80,11 @@ class JenkinsSetting < ActiveRecord::Base
 
 
     def jenkins_client
-      @jenkins_client ||= JenkinsClient.new(url, jenkins_options)
+	    if nil == @jenkins_client
+	    	logger.info "JenkinsSetting::jenkins_client::JenkinsClient.new(#{url}, #{jenkins_options}) "
+	    end
+	    
+	    @jenkins_client ||= JenkinsClient.new(url, jenkins_options)
     end
 
 

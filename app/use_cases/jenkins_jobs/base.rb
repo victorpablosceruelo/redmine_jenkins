@@ -262,13 +262,13 @@ module JenkinsJobs
         # You should choose a better exception.
         raise RedmineJenkins::Error::JenkinsConnectionError, 'too many HTTP redirects' if limit == 0
       
-        @logger.info "Username / pwd: #{jenkins_job.jenkins_setting.auth_user} / #{jenkins_job.jenkins_setting.auth_password} "
+        @logger.info "Username / pwd: #{jenkins_job.jenkins_setting.sonarqube_auth_user} / #{jenkins_job.jenkins_setting.sonarqube_auth_password} "
 
         uri = URI(url)
       
         # authentication = ActionController::HttpAuthentication::Basic.encode_credentials(jenkins_job.jenkins_auth_user, jenkins_job.jenkins_auth_password)
         # user_pwd_str = '#{jenkins_job.jenkins_setting.auth_user}:#{jenkins_job.jenkins_setting.auth_password}'
-        user_pwd_str = jenkins_job.jenkins_setting.auth_user + ':' + jenkins_job.jenkins_setting.auth_password
+        user_pwd_str = jenkins_job.jenkins_setting.sonarqube_auth_user + ':' + jenkins_job.jenkins_setting.sonarqube_auth_password
 
         @logger.info 'user_pwd_str'
         @logger.info user_pwd_str

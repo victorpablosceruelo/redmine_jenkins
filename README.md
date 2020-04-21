@@ -36,6 +36,21 @@ redmine$ cd REDMINE_ROOT/
 redmine$ bundle install --without development test
 redmine$ bundle exec rake redmine:plugins:migrate RAILS_ENV=production NAME=redmine_jenkins
 
+## Configuration
+
+[root@ADGEREDINFDESM1 redmine_jenkins]\# cat ../../config/additional_environment.rb
+# config.relative_url_root = '/redmine'
+
+
+ENV['JENKINS_URL'] ||= 'https://des-jenkins.scae.redsara.es/'
+ENV['JENKINS_USER'] ||= 'admin'
+ENV['JENKINS_PWD'] ||= 'admin'
+ENV['SONARQUBE_USER'] ||= 'admin'
+ENV['SONARQUBE_PWD'] ||= 'admin'
+
+[root@ADGEREDINFDESM1 redmine_jenkins]\# 
+
+
 ## After install the plugin, start Redmine!
 ```
 
