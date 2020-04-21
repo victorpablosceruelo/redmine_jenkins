@@ -19,7 +19,7 @@ class JenkinsJobPresenter < SimpleDelegator
 
     s = ''
     s << content_tag(:h3, link_to_job)
-    s << render_job_description unless jenkins_job.project.jenkins_setting.show_compact?
+    s << render_job_description unless jenkins_job.project.jenkins_setting.show_compact
     s.html_safe
   end
 
