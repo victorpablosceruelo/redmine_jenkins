@@ -60,8 +60,10 @@ en:
   label_see_jenkins_job_build_logs: 'See Jenkins Job Build Logs '
 
   notice_job_added: Job added
-  notice_job_add_failed: Adding job failed
+  notice_job_add_failed: Failed to add job
   notice_job_deleted: Job deleted
+  notice_job_delete_failed: Failed to delete job
+  notice_job_update_failed: Failed to update job
 
   field_repository: Repository
   field_job_name: Job name

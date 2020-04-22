@@ -25,6 +25,16 @@ class JenkinsJobsController < ApplicationController
 
   def create
 	  logger.info "JenkinsJobsController::create"
+
+	  # Security issues
+	  if ! User.current.allowed_to?(:edit_jenkins_settings, @project)
+		  logger.error "Could NOT create job."
+		  flash[:notice] = l(:notice_job_add_failed)
+		  # @jobs = available_jobs
+		  render_js_redirect
+		  return
+	  end
+
     @job = @project.jenkins_jobs.new(params[:jenkins_jobs])
     if @job.save
       flash[:notice] = l(:notice_job_added)
@@ -45,6 +55,16 @@ class JenkinsJobsController < ApplicationController
 
   def update
 	  logger.info "JenkinsJobsController::update"
+
+	  # Security issues
+          if ! User.current.allowed_to?(:edit_jenkins_settings, @project)
+                  logger.error "Could NOT update job."
+                  flash[:notice] = l(:notice_job_update_failed)
+                  # @jobs = available_jobs
+                  render_js_redirect
+                  return
+          end
+
     if @job.update_attributes(params[:jenkins_jobs])
       flash[:notice] = l(:notice_job_updated)
       result = BuildManager.update_all_builds!(@job)
@@ -58,7 +78,11 @@ class JenkinsJobsController < ApplicationController
 
 
   def destroy
-    flash[:notice] = l(:notice_job_deleted) if @job.destroy
+	if User.current.allowed_to?(:edit_jenkins_settings, @project)
+    		flash[:notice] = l(:notice_job_deleted) if @job.destroy
+	else
+		flash[:notice] = l(:notice_job_delete_failed)
+	end
     render_js_redirect
   end
 
