@@ -440,9 +440,17 @@ class JenkinsJobPresenter < SimpleDelegator
     end
 
     def link_to_latest_build_console_output
+	link_title = l(:label_see_console_output)
 	if ! jenkins_job.latest_build_number.nil?
-		url = jenkins_job.latest_build_number == 0 ? 'javascript:void(0);' : console_jenkins_job_path(jenkins_job.project, jenkins_job)
-		return link_to(l(:label_see_console_output), url, title: l(:label_see_console_output), class: 'modal-box-close-only')
+		if jenkins_job.latest_build_number == 0
+			url = 'javascript:void(0);'
+			return link_to(link_title, url, title: link_title, class: 'modal-box-close-only')
+		else
+			url = console_jenkins_job_path(jenkins_job.project, jenkins_job)
+			return link_to(link_title, url, title: link_title, class: 'modal-box-close-only')
+
+			# return link_to(link_title, url, title: link_title, class: 'modal-box-close-only')
+		end
 	end 
 
 	# title: l(:label_see_console_output), remote: true, target:'_blank'
@@ -479,6 +487,9 @@ class JenkinsJobPresenter < SimpleDelegator
     def render_job_history
 	s = ''
 	jenkins_job.builds.ordered.each do | build |
+		url = console_jenkins_job_path(jenkins_job.project, jenkins_job, build)
+		link_title = "##{build.number}"
+		s << link_to(link_title, url, title: link_title, class: 'modal-box-close-only')
 	end
 	s.html_safe
     end
