@@ -334,7 +334,7 @@ class JenkinsJobPresenter < SimpleDelegator
       s << content_tag(:li, latest_build_duration) 
       s << content_tag(:li, latest_build_date) 
 
-      s << content_tag(:li, link_to_console_output)
+      # s << content_tag(:li, link_to_console_output)
       s << content_tag(:li, '', class: 'icon icon-running') if jenkins_job.state == 'running'
 
       s.html_safe
@@ -347,7 +347,8 @@ class JenkinsJobPresenter < SimpleDelegator
       s = ''
       s << content_tag(:span, link_to_jenkins_job_latest_build(jenkins_job).html_safe, class: 'label label-info')
       s << content_tag(:span, state_color_to_image(jenkins_job.state_color, img_desc), class: 'job_status_line')
-      s << content_tag(:span, link_to_jenkins_job_latest_build_console(jenkins_job).html_safe, class: 'job_status_line')
+      # s << content_tag(:span, link_to_jenkins_job_latest_build_console(jenkins_job).html_safe, class: 'job_status_line')
+      s << content_tag(:span, link_to_latest_build_console_output.html_safe, class: 'job_status_line')
 
       s.html_safe
     end
@@ -408,7 +409,8 @@ class JenkinsJobPresenter < SimpleDelegator
         end
       end
   
-      s << content_tag(:li, link_to_history, style: getLiStyleForIcons)
+      # s << content_tag(:li, link_to_history, style: getLiStyleForIcons)
+      s << content_tag(:li, render_job_history, style: getLiStyleForIcons)
       s.html_safe
     end
   
@@ -427,11 +429,24 @@ class JenkinsJobPresenter < SimpleDelegator
 	s.html_safe
     end
 
+    def link_to_jenkins_job_latest_build_console
+        if ! jenkins_job.latest_build_number.nil?
+                url    = jenkins_job.latest_build_number == 0 ? 'javascript:void(0);' : jenkins_job.latest_build_url + '/console'
+                target = jenkins_job.latest_build_number == 0 ? '' : '_blank'
+                return link_to jenkins_logs_icon, url, target: target
+                # Attributes included in image: longdesc: longdesc, alt: longdesc, title: longdesc
+        end
+        ''
+    end
 
-    def link_to_console_output
-       url = jenkins_job.latest_build_number == 0 ? 'javascript:void(0);' : console_jenkins_job_path(jenkins_job.project, jenkins_job)
-       link_to(l(:label_see_console_output), url, title: l(:label_see_console_output), class: 'modal-box-close-only')
-       # title: l(:label_see_console_output), remote: true, target:'_blank'
+    def link_to_latest_build_console_output
+	if ! jenkins_job.latest_build_number.nil?
+		url = jenkins_job.latest_build_number == 0 ? 'javascript:void(0);' : console_jenkins_job_path(jenkins_job.project, jenkins_job)
+		return link_to(l(:label_see_console_output), url, title: l(:label_see_console_output), class: 'modal-box-close-only')
+	end 
+
+	# title: l(:label_see_console_output), remote: true, target:'_blank'
+	return ''
     end
 
 
@@ -461,6 +476,12 @@ class JenkinsJobPresenter < SimpleDelegator
       link_to(jenkins_history_title, jenkins_history_url, class: modal_box_css_class, title: jenkins_history_title)
     end
 
+    def render_job_history
+	s = ''
+	jenkins_job.builds.ordered.each do | build |
+	end
+	s.html_safe
+    end
 
     def render_changesets_list(changesets)
       visible_changesets = changesets.take(5)

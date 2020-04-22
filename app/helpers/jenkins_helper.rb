@@ -66,10 +66,11 @@ module JenkinsHelper
 
 
   def link_to_jenkins_job_latest_build(job)
-    longdesc = l(:label_see_jenkins_job_build) + " ##{job.latest_build_number}"
-    url    = job.latest_build_number == 0 ? 'javascript:void(0);' : job.latest_build_url
-    target = job.latest_build_number == 0 ? '' : '_blank'
-    link_to "##{job.latest_build_number}", url, target: target, longdesc: longdesc, alt: longdesc, title: longdesc
+    # longdesc = l(:label_see_jenkins_job_build) + " ##{job.latest_build_number}"
+    # url    = job.latest_build_number == 0 ? 'javascript:void(0);' : job.latest_build_url
+    # target = job.latest_build_number == 0 ? '' : '_blank'
+    # link_to "##{job.latest_build_number}", url, target: target, longdesc: longdesc, alt: longdesc, title: longdesc
+    return "##{job.latest_build_number}"
   end
 
 
