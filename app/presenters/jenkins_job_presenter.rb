@@ -334,7 +334,7 @@ class JenkinsJobPresenter < SimpleDelegator
       s << content_tag(:li, latest_build_duration) 
       s << content_tag(:li, latest_build_date) 
 
-      # s << content_tag(:li, link_to_console_output)
+      s << content_tag(:li, link_to_console_output)
       s << content_tag(:li, '', class: 'icon icon-running') if jenkins_job.state == 'running'
 
       s.html_safe
@@ -429,10 +429,9 @@ class JenkinsJobPresenter < SimpleDelegator
 
 
     def link_to_console_output
-      # url = jenkins_job.latest_build_number == 0 ? 'javascript:void(0);' : console_jenkins_job_path(jenkins_job.project, jenkins_job)
-      # link_to(l(:label_see_console_output), url, class: 'modal-box-close-only')
-      # title: l(:label_see_console_output), remote: true, target:'_blank'
-
+       url = jenkins_job.latest_build_number == 0 ? 'javascript:void(0);' : console_jenkins_job_path(jenkins_job.project, jenkins_job)
+       link_to(l(:label_see_console_output), url, title: l(:label_see_console_output), class: 'modal-box-close-only')
+       # title: l(:label_see_console_output), remote: true, target:'_blank'
     end
 
 
