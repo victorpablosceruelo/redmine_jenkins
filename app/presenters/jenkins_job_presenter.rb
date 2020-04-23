@@ -26,7 +26,7 @@ class JenkinsJobPresenter < SimpleDelegator
 
   def render_job_builds_infos
 	  s = ''
-
+	  s << content_tag(:table, render_job_builds_infos_table, class: 'job_builds_infos_table')
 	  s.html_safe
   end
 
@@ -415,8 +415,8 @@ class JenkinsJobPresenter < SimpleDelegator
         end
       end
   
-      # s << content_tag(:li, link_to_history, style: getLiStyleForIcons)
-      s << content_tag(:li, render_job_history, style: getLiStyleForIcons)
+      s << content_tag(:li, link_to_history, style: getLiStyleForIcons)
+      # s << content_tag(:li, render_job_history, style: getLiStyleForIcons)
       s.html_safe
     end
   
@@ -490,13 +490,25 @@ class JenkinsJobPresenter < SimpleDelegator
       link_to(jenkins_history_title, jenkins_history_url, class: modal_box_css_class, title: jenkins_history_title)
     end
 
-    def render_all_builds_of_job
+    def render_job_builds_infos_table
 	s = ''
+	s << content_tag(:th, l(:label_job_build_summary))
+	s << content_tag(:th, l(:label_job_build_duration))
+	s << content_tag(:th, l(:label_job_build_finished_at))
+
 	jenkins_job.builds.ordered.each do | build |
-		url = console_jenkins_job_path(jenkins_job.project, jenkins_job, build)
-		link_title = "##{build.number}"
-		s << link_to(link_title, url, title: link_title, class: 'modal-box-close-only')
+		s << content_tag(:tr, render_job_builds_infos_table_row(build))
 	end
+
+	s.html_safe
+    end
+
+    def render_job_builds_infos_table_row(build)
+	s = ''
+	url = console_jenkins_job_path(jenkins_job.project, jenkins_job, build)
+	link_title = "##{build.number}"
+	s << content_tag(:td, link_to(link_title, url, title: link_title, class: 'modal-box-close-only'))
+	
 	s.html_safe
     end
 
