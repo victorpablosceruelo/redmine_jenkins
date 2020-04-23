@@ -20,9 +20,15 @@ class JenkinsJobPresenter < SimpleDelegator
     s = ''
     s << content_tag(:h3, link_to_job)
     s << render_job_description unless jenkins_job.project.jenkins_setting.show_compact
+    s << build_history
     s.html_safe
   end
 
+  def render_job_builds_infos
+	  s = ''
+
+	  s.html_safe
+  end
 
   def latest_build_infos
     content_tag(:ul, render_latest_build_infos, class: 'list-unstyled', style: "line-height:34px")
@@ -484,7 +490,7 @@ class JenkinsJobPresenter < SimpleDelegator
       link_to(jenkins_history_title, jenkins_history_url, class: modal_box_css_class, title: jenkins_history_title)
     end
 
-    def render_job_history
+    def render_all_builds_of_job
 	s = ''
 	jenkins_job.builds.ordered.each do | build |
 		url = console_jenkins_job_path(jenkins_job.project, jenkins_job, build)

@@ -1,7 +1,6 @@
 - present job do |p|
   %tr{ id: p.job_id }
     %td= p.job_info
-    %td= p.latest_build_infos
-    %td= p.build_history
+    %td= p.render_job_builds_infos
     %td= p.job_actions
     %td{ class: 'source_quality_report_job_table_cell' }= p.render_sonarqube_report

@@ -38,6 +38,7 @@ en:
   label_job_state: State
   label_job_history: History
   label_see_history: see History
+  label_job_builds_infos: Job Builds
   label_build_now: Build Now
   label_refresh_jobs: Refesh the list of jobs
   label_refresh_builds: Refresh the list of builds
