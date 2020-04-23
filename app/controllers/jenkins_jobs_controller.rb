@@ -24,16 +24,16 @@ class JenkinsJobsController < ApplicationController
 
 
   def create
-	  logger.info "JenkinsJobsController::create"
+	  # logger.info "JenkinsJobsController::create"
 
 	  # Security issues
-	  if ! User.current.allowed_to?(:edit_jenkins_settings, @project)
-		  logger.error "Could NOT create job."
-		  flash[:notice] = l(:notice_job_add_failed)
+	  #if ! User.current.allowed_to?(:edit_jenkins_settings, @project)
+	#	  logger.error "Could NOT create job."
+	#	  flash[:notice] = l(:notice_job_add_failed)
 		  # @jobs = available_jobs
-		  render_js_redirect
-		  return
-	  end
+	#	  render_js_redirect
+	#	  return
+	#  end
 
     @job = @project.jenkins_jobs.new(params[:jenkins_jobs])
     if @job.save
