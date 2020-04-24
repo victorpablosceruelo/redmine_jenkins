@@ -1,6 +1,18 @@
 - present job do |p|
   %tr{ id: p.job_id }
     %td= p.job_info
-    %td= p.render_job_builds_infos
+    %td
+      %table{ class: 'table table-job-builds' } 
+        %thead
+          %tr
+            %th{:colspan => 1}= l(:label_jenkins_build_id)
+            %th{:colspan => 1}= l(:label_jenkins_build_status)
+            %th{:colspan => 1}= l(:label_jenkins_build_duration)
+            %th{:colspan => 1}= l(:label_jenkins_build_finished_at)
+        %tbody
+          - job.builds.each do |build|
+            = render partial: 'jenkins_jobs/job_build_solo', locals: { build: build }
+
     %td= p.job_actions
     %td{ class: 'source_quality_report_job_table_cell' }= p.render_sonarqube_report
+
