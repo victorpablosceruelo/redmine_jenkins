@@ -63,6 +63,11 @@ en:
   label_see_jenkins_job_build: 'See Jenkins Job Build '
   label_see_jenkins_job_build_logs: 'See Jenkins Job Build Logs '
 
+  label_jenkins_build_id: 'Id'
+  label_jenkins_build_status: 'Status'
+  label_jenkins_build_duration: 'Duration'
+  label_jenkins_build_finished_at: 'Finished at'
+
   notice_job_added: Job added
   notice_job_add_failed: Failed to add job
   notice_job_deleted: Job deleted

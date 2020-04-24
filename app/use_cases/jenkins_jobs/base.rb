@@ -95,6 +95,8 @@ module JenkinsJobs
           end
         end
 
+	update_sonarqube_metrics_if_possible()
+
         clean_up_builds
 	return true
       end
@@ -103,6 +105,7 @@ module JenkinsJobs
       def create_build(build_number)
         ## Get BuildDetails from Jenkins
         build_details = get_jenkins_build_details(build_number)
+	@logger.info "build_details: #{build_details}"
 
         ## Create a new AR object to store data
         build = jenkins_job.builds.new
@@ -120,7 +123,8 @@ module JenkinsJobs
         ## Update SonarqubeDashboardUrl
         getSonarqubeDashboardUrl(build_details)
 
-        update_sonarqube_metrics_if_possible()
+	# Not for every build, please ... 
+        # update_sonarqube_metrics_if_possible()
 
       end
 
