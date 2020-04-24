@@ -5,8 +5,8 @@
 
   .flash-messages= error_messages_for 'job'
 
+  = f.hidden_field :authenticity_token, name: 'authenticity_token', value: form_authenticity_token
   = f.hidden_field :builds_to_keep
-  = f.hidden_field :authenticity_token, name: 'authenticity_token', value: form_authenticity_token 
 
   %p= f.select :name, options_for_select(@jobs.collect {|job| [job, job]}), label: l(:field_job_name)
   %p= f.select :repository_id, options_for_select(@project.repositories.collect {|r| [ r.identifier.blank? ? 'default' : r.identifier, r.id ]})

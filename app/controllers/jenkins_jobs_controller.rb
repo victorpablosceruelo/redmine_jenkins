@@ -136,9 +136,11 @@ class JenkinsJobsController < ApplicationController
     def render_js_redirect
 	logger.info "JenkinsJobsController::render_js_redirect"
 	logger.info "window.location = #{success_url.to_json};"
+	logger.info "respond_to: #{respond_to} "
 
       respond_to do |format|
-        format.js { render js: "window.location = #{success_url.to_json};" }
+	      logger.info "format: #{format} "
+	      format.js { render js: "window.location = #{success_url.to_json};" }
       end
     end
 
