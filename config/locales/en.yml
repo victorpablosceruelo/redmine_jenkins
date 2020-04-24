@@ -67,6 +67,7 @@ en:
   notice_job_add_failed: Failed to add job
   notice_job_deleted: Job deleted
   notice_job_delete_failed: Failed to delete job
+  notice_job_updated: Job updated
   notice_job_update_failed: Failed to update job
 
   field_repository: Repository

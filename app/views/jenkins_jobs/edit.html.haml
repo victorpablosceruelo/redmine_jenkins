@@ -1,7 +1,8 @@
 = csrf_meta_tags
 = labelled_form_for :jenkins_jobs, @job,
-                    url:  jenkins_job_path(@project, @job),
-                    html: { method: :put, class: 'tabular', remote: true } do |f|
+  url:  jenkins_job_path(@project, @job),
+  html: { method: :put, class: 'tabular', remote: true } do |f|
+  // html: { method: :put, class: 'tabular', remote: true, format: 'js' } do |f|
 
   .flash-messages= error_messages_for 'job'
 

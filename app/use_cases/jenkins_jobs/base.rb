@@ -229,6 +229,7 @@ module JenkinsJobs
         end
         @logger.info "update_sonarqube_metrics_if_possible: sonarqubeDashboardUrl: '#{jenkins_job.sonarqube_dashboard_url}'"
 
+	response_body = nil
         begin
           sonarqube_api_url = jenkins_job.sonarqube_dashboard_url
 	  if sonarqube_api_url.nil?
@@ -242,19 +243,44 @@ module JenkinsJobs
           @logger.info "update_sonarqube_metrics_if_possible: url to retrieve sonarqube metrics: " + sonarqube_api_url
 
           response_body = fetch_url(sonarqube_api_url)
-          if (nil != response_body)
-            jsonResult = JSON.parse(response_body)
-            # jsonResult = JSON.load(URI.open(url))
-            @logger.info jsonResult
-            saveMetrics jsonResult
-          end
 
         rescue => e
-          errorMsg = "update_sonarqube_metrics_if_possible: " + e.message
+          errorMsg = "update_sonarqube_metrics_if_possible: fetch_url: " + e.message
           @errors << errorMsg
+	  @logger.error "-----"
           @logger.error errorMsg
+	  @logger.error "-----"
           @logger.error e.backtrace[0]
+	  @logger.error "-----"
           @logger.error e.backtrace
+	  @logger.error "-----"
+        end
+
+	jsonResult = nil
+	begin
+		if (nil != response_body)
+			jsonResult = JSON.parse(response_body)
+			# jsonResult = JSON.load(URI.open(url))
+			@logger.debug jsonResult
+		end
+	rescue => e
+		errorMsg = "update_sonarqube_metrics_if_possible: JSON.parse: " + e.message
+		@errors << errorMsg
+		@logger.error errorMsg
+		@logger.error e.backtrace[0]
+		@logger.error e.backtrace
+	end
+
+	begin
+		if (nil != jsonResult)
+			saveMetrics jsonResult
+		end
+	rescue => e
+                errorMsg = "update_sonarqube_metrics_if_possible: saveMetrics: " + e.message
+                @errors << errorMsg
+                @logger.error errorMsg
+                @logger.error e.backtrace[0]
+                @logger.error e.backtrace
         end
       end
 

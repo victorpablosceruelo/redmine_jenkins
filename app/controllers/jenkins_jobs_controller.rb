@@ -12,6 +12,10 @@ class JenkinsJobsController < ApplicationController
   helper :redmine_bootstrap_kit
   helper :jenkins
 
+  def index
+	redirect_to jenkins_path(@project)
+  end
+
   def show
     render_404
   end
@@ -136,12 +140,16 @@ class JenkinsJobsController < ApplicationController
     def render_js_redirect
 	logger.info "JenkinsJobsController::render_js_redirect"
 	logger.info "window.location = #{success_url.to_json};"
-	logger.info "respond_to: #{respond_to} "
+	# logger.info "respond_to: #{respond_to} "
 
-      respond_to do |format|
-	      logger.info "format: #{format} "
-	      format.js { render js: "window.location = #{success_url.to_json};" }
-      end
+	# respond_to do |format|
+		# logger.info "format: #{format} "
+		# format.html {redirect_to success_url}
+		# format.js { render js: "window.location = #{success_url.to_json};" }
+		# format.html { render :new, :locals => { :career => @career} }
+	# end
+	
+	redirect_to success_url
     end
 
 
