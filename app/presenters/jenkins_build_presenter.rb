@@ -19,9 +19,9 @@ class JenkinsBuildPresenter < SimpleDelegator
   def duration
         s = ''
         if !jenkins_job_build.duration.nil?
-                s << l(:label_job_duration)
-                s << ': '
-                s << Time.at(jenkins_job_build.duration/1000).strftime("%M:%S") rescue "00:00"
+                # s << l(:label_job_duration)
+                # s << ': '
+                s << Time.at(jenkins_job_build.duration/1000).strftime("%M\' %S\"") rescue "00:00"
         end
         s.html_safe
   end
@@ -35,7 +35,7 @@ class JenkinsBuildPresenter < SimpleDelegator
 	# s << content_tag(:span, link_to_latest_build_console_output.html_safe, class: 'job_status_line')
 	
 	console_url = console_jenkins_job_path(jenkins_job_build.jenkins_job.project, jenkins_job_build.jenkins_job, jenkins_job_build)
-        console_window_title = "Console of build ##{build.number}"
+        console_window_title = "Console of build ##{jenkins_job_build.number}"
 	console_link_title = jenkins_logs_icon
 	# console_link_title = 'View console'
         s << content_tag(:span, link_to(console_link_title, console_url, title: console_window_title, class: 'modal-box-close-only'))
@@ -94,17 +94,6 @@ class JenkinsBuildPresenter < SimpleDelegator
     
   
   
-  def render_jenkins_job_latest_build_link_and_state(jenkins_job)
-      img_desc = get_job_latest_build_image_description(jenkins_job)
-
-      s = ''
-      s << content_tag(:span, link_to_jenkins_job_latest_build(jenkins_job).html_safe, class: 'label label-info')
-      s << content_tag(:span, state_color_to_image(jenkins_job.state_color, img_desc), class: 'job_status_line')
-      # s << content_tag(:span, link_to_jenkins_job_latest_build_console(jenkins_job).html_safe, class: 'job_status_line')
-      s << content_tag(:span, link_to_latest_build_console_output.html_safe, class: 'job_status_line')
-
-      s.html_safe
-    end
 
     def get_job_latest_build_image_description(jenkins_job)
 	s = ''
@@ -120,47 +109,5 @@ class JenkinsBuildPresenter < SimpleDelegator
 	end
 	s.html_safe
     end 
-
-    def getLiStyleForIcons
-      "line-height:34px; margin:2px; vertical-align:middle; "
-    end
-
-    def link_to_jenkins_job_latest_build_console
-        if ! jenkins_job.latest_build_number.nil?
-                url    = jenkins_job.latest_build_number == 0 ? 'javascript:void(0);' : jenkins_job.latest_build_url + '/console'
-                target = jenkins_job.latest_build_number == 0 ? '' : '_blank'
-                return link_to jenkins_logs_icon, url, target: target
-                # Attributes included in image: longdesc: longdesc, alt: longdesc, title: longdesc
-        end
-        ''
-    end
-
-    def link_to_latest_build_console_output
-	link_title = l(:label_see_console_output)
-	if ! jenkins_job.latest_build_number.nil?
-		if jenkins_job.latest_build_number == 0
-			url = 'javascript:void(0);'
-			return link_to(link_title, url, title: link_title, class: 'modal-box-close-only')
-		else
-			url = console_jenkins_job_path(jenkins_job.project, jenkins_job)
-			return link_to(link_title, url, title: link_title, class: 'modal-box-close-only')
-
-			# return link_to(link_title, url, title: link_title, class: 'modal-box-close-only')
-		end
-	end 
-
-	# title: l(:label_see_console_output), remote: true, target:'_blank'
-	return ''
-    end
-
-
-    def render_job_builds_infos_table_row(build)
-	s = ''
-	url = console_jenkins_job_path(jenkins_job.project, jenkins_job, build)
-	link_title = "##{build.number}"
-	s << content_tag(:td, link_to(link_title, url, title: link_title, class: 'modal-box-close-only'))
-	
-	s.html_safe
-    end
 
 end

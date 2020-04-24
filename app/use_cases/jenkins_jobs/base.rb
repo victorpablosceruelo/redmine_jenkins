@@ -105,7 +105,7 @@ module JenkinsJobs
       def create_build(build_number)
         ## Get BuildDetails from Jenkins
         build_details = get_jenkins_build_details(build_number)
-	@logger.info "build_details: #{build_details}"
+	# @logger.info "build_details: '#{build_details}'"
 
         ## Create a new AR object to store data
         build = jenkins_job.builds.new
@@ -464,6 +464,7 @@ module JenkinsJobs
       def get_jenkins_build_details(build_number)
         begin
           data = jenkins_client.job.get_build_details(jenkins_job.name2url, build_number)
+	  @logger.info "get_jenkins_build_details: data: '#{data}'"
 	  return data
         rescue => e
           @errors << e.message
