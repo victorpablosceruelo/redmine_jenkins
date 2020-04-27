@@ -30,7 +30,12 @@ class JenkinsBuildPresenter < SimpleDelegator
 	# img_desc = get_job_latest_build_image_description(jenkins_job)
 
 	s = ''
-	# s << content_tag(:span, state_color_to_image(jenkins_job.state_color, img_desc), class: 'job_status_line')
+	if (jenkins_job_build.number == jenkins_job_build.jenkins_job.latest_build_number)
+		img_desc = get_build_image_description(jenkins_job_build.jenkins_job.state, jenkins_job_build.jenkins_job.state_color)
+		s << content_tag(:span, state_color_to_image(jenkins_job_build.jenkins_job.state_color, img_desc), class: 'job_status_line')
+	end
+
+	s << jenkins_job_state_to_label(jenkins_job_build.result)
 	# s << content_tag(:span, link_to_jenkins_job_latest_build_console(jenkins_job).html_safe, class: 'job_status_line')
 	# s << content_tag(:span, link_to_latest_build_console_output.html_safe, class: 'job_status_line')
 	
@@ -45,6 +50,21 @@ class JenkinsBuildPresenter < SimpleDelegator
   end
 
   private
+
+    def get_build_image_description(state, state_color)
+        s = ''
+        if (! state.blank?)
+                s << l(:label_job_build_state)
+                s << ": "
+                s << jenkins_job_state_to_label(state)
+                if (! state_color.nil?) and (! state_color.empty?)
+                        s << " ("
+                        s << state_color
+                        s << ")"
+                end
+        end
+        s.html_safe
+    end
 
   def alert_status_to_str(alert_status)
     if ((alert_status == nil) || (alert_status == ''))

@@ -456,6 +456,7 @@ module JenkinsJobs
       def get_jenkins_job_details
         begin
           data = jenkins_client.job.list_details(jenkins_job.name2url)
+	  @logger.info "get_jenkins_job_details: data: '#{data}'"
         rescue => e
           @errors << e.message
         else

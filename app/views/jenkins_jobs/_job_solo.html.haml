@@ -7,8 +7,9 @@
           %tr
             %th{:colspan => 1}= l(:label_jenkins_build_id)
             %th{:colspan => 1}= l(:label_jenkins_build_status)
-            %th{:colspan => 1}= l(:label_jenkins_build_duration)
-            %th{:colspan => 1}= l(:label_jenkins_build_finished_at)
+            %th{:colspan => 1}
+              %span= l(:label_jenkins_build_duration)
+              %span= l(:label_jenkins_build_finished_at)
         %tbody
           - job.builds.each do |build|
             = render partial: 'jenkins_jobs/job_build_solo', locals: { build: build }
