@@ -1,5 +1,4 @@
 require 'jenkins_api_client'
-require 'logger'
 
 class JenkinsClient
 
@@ -12,21 +11,29 @@ class JenkinsClient
     @options[:http_read_timeout] = opts[:http_read_timeout] || 60
     @options[:username] = opts[:username] if opts.has_key?(:username)
     @options[:password] = opts[:password] if opts.has_key?(:password)
-
-    @log_location = STDOUT unless @log_location
-    @log_level = Logger::INFO unless @log_level
-    @logger = Logger.new(@log_location)
-    @logger.level = @log_level
-
+    # @options[:logger] = logger
   end
 
 
   def connection
-    JenkinsApi::Client.new(@options)
+    client = JenkinsApi::Client.new(@options)
+    # client.logger = logger
+    return client
   rescue ArgumentError => e
-    raise RedmineJenkins::Error::JenkinsConnectionError, e
+	errorMsg = "Connection error: " + e.message
+	logger.error errorMsg
+	logger.error e.backtrace.join("\n")
+	raise RedmineJenkins::Error::JenkinsConnectionError, e
   rescue Unauthorized => e
-    raise RedmineJenkins::Error::JenkinsConnectionError, e
+	errorMsg = "Connection error: " + e.message
+	logger.error errorMsg
+	logger.error e.backtrace.join("\n")
+	raise RedmineJenkins::Error::JenkinsConnectionError, e
+  rescue => e
+	errorMsg = "Connection error: " + e.message
+        logger.error errorMsg
+	logger.error e.backtrace.join("\n")
+	raise e
   end
 
 

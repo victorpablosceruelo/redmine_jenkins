@@ -42,7 +42,7 @@ class JenkinsJobsController < ApplicationController
     @job = @project.jenkins_jobs.new(params[:jenkins_jobs])
     if @job.save
       flash[:notice] = l(:notice_job_added)
-      result = BuildManager.create_builds!(@job)
+      result = BuildManager.create_builds!(@job, logger)
       flash[:error] = result.message_on_errors if !result.success?
       render_js_redirect
     else
@@ -71,7 +71,7 @@ class JenkinsJobsController < ApplicationController
 
     if @job.update_attributes(params[:jenkins_jobs])
       flash[:notice] = l(:notice_job_updated)
-      result = BuildManager.update_all_builds!(@job)
+      result = BuildManager.update_all_builds!(@job, logger)
       flash[:error] = result.message_on_errors if !result.success?
       render_js_redirect
     else
@@ -92,7 +92,7 @@ class JenkinsJobsController < ApplicationController
 
 
   def build
-    result = BuildManager.trigger_build!(@job)
+    result = BuildManager.trigger_build!(@job, logger)
     if result.success?
       flash.now[:notice] = result.message_on_success
     else
@@ -112,7 +112,7 @@ class JenkinsJobsController < ApplicationController
 
 
   def refresh
-    result = BuildManager.update_last_build!(@job)
+    result = BuildManager.update_last_build!(@job, logger)
     flash.now[:error] = result.message_on_errors if !result.success?
   end
 

@@ -14,17 +14,20 @@ module JenkinsJobs
     attr_reader :use_case
 
 
-    def initialize(jenkins_job)
+    def initialize(jenkins_job, logger)
       @jenkins_job = jenkins_job
       @job_data    = nil
       @errors      = []
       @use_case    = self.class.name.split('::').last.underscore
 
-      @log_location = STDOUT unless @log_location
-      @log_level = Logger::INFO unless @log_level
-      @logger = Logger.new(@log_location)
-      @logger.level = @log_level
-
+      if (nil == logger)
+	@log_location = STDOUT unless @log_location
+	@log_level = Logger::INFO unless @log_level
+	@logger = Logger.new(@log_location)
+	@logger.level = @log_level
+      else 
+	@logger = logger
+      end
     end
 
 

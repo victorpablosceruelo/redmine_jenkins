@@ -21,7 +21,7 @@ class JenkinsController < ApplicationController
     success = []
     errors  = []
     @project.jenkins_jobs.each do |job|
-      result = BuildManager.update_last_build!(job)
+      result = BuildManager.update_last_build!(job, logger)
       if result.success?
         success << result.message_on_success
       else

@@ -3,7 +3,17 @@ module JenkinsJobs
 
     def execute
       return if !job_status_updated?
-      do_create_builds(job_data['builds'].take(jenkins_job.builds_to_keep), true)
+      
+      begin
+      	do_create_builds(job_data['builds'].take(jenkins_job.builds_to_keep), true)
+      rescue => e
+	errorMsg = "UpdateAllBuilds: " + e.message
+        @errors << errorMsg
+        @logger.error errorMsg
+        @logger.error e.backtrace.join("\n")
+	raise e
+      end
+
     end
 
   end
