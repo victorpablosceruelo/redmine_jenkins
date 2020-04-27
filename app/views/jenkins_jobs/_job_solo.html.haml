@@ -1,6 +1,15 @@
 - present job do |p|
   %tr{ id: p.job_id }
-    %td= p.job_info
+    %td
+      %h3= p.job_name
+      %h2= p.job_description
+      %table{ class: 'table table-job-summary' }
+        %tbody
+          %tr
+            %td{:rowspan => 2}= l(:label_jenkins_job_summary)
+            %td= p.job_last_build_status
+          %tr
+            %td= p.job_stability
     %td
       %table{ class: 'table table-job-builds' } 
         %thead
@@ -8,8 +17,9 @@
             %th{:colspan => 1}= l(:label_jenkins_build_id)
             %th{:colspan => 1}= l(:label_jenkins_build_status)
             %th{:colspan => 1}
-              %span= l(:label_jenkins_build_duration)
-              %span= l(:label_jenkins_build_finished_at)
+              %ul{class: 'jenkins-job-details-list'}
+                %li= l(:label_jenkins_build_duration)
+                %li= l(:label_jenkins_build_finished_at)
         %tbody
           - job.builds.each do |build|
             = render partial: 'jenkins_jobs/job_build_solo', locals: { build: build }

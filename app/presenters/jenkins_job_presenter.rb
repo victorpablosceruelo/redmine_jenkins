@@ -13,23 +13,42 @@ class JenkinsJobPresenter < SimpleDelegator
   end
 
 
-  def job_info
+  def job_name
     longdesc = l(:label_see_jenkins_job) + jenkins_job.name
     link_to_job = link_to(jenkins_job.name, jenkins_job.url, target: '_blank', alt: longdesc, longdesc: longdesc, title: longdesc)
+  end
 
-    s = ''
-    s << content_tag(:h3, link_to_job)
-    s << render_job_description unless jenkins_job.project.jenkins_setting.show_compact
-    s << build_history
+  def job_description
+      s = ''
+      if ! jenkins_job.project.jenkins_setting.show_compact
+      	if (!jenkins_job.nil?) and (!jenkins_job.description.nil?)
+        	s << jenkins_job.description
+     	end
+      end
+      s
+  end
+
+
+  def job_last_build_status
+      img_desc = get_job_latest_build_image_description(jenkins_job)
+
+      s = ''
+      s << content_tag(:span, state_color_to_image(jenkins_job.state_color, img_desc), class: 'job_status_line')
+      s.html_safe
+  end
+
+
+  def job_stability
+    s = content_tag(:ul, build_history_list, class: 'list-unstyled')
     s.html_safe
   end
 
-  def render_job_builds_infos
-	  s = ''
-	  s << content_tag(:table, render_job_builds_infos_table, class: 'job_builds_infos_table')
-	  s.html_safe
-  end
 
+  def job_actions
+    s = content_tag(:ul, job_actions_list, class: 'list-unstyled', style: "line-height:34px")
+    s.html_safe
+  end
+ 
   def latest_build_infos
     content_tag(:ul, render_latest_build_infos, class: 'list-unstyled', style: "line-height:34px")
   end
@@ -45,6 +64,9 @@ class JenkinsJobPresenter < SimpleDelegator
       return content_tag(:span, l(:label_no_sonarqube_report_available))
     end
   end
+
+
+  private
 
   def render_sonarqube_report_details
     if (jenkins_job == nil)
@@ -319,19 +341,7 @@ class JenkinsJobPresenter < SimpleDelegator
   end
 
 
-  def build_history
-    s = content_tag(:ul, build_history_list, class: 'list-unstyled')
-    s.html_safe
-  end
 
-
-  def job_actions
-    s = content_tag(:ul, job_actions_list, class: 'list-unstyled', style: "line-height:34px")
-    s.html_safe
-  end
-
-
-  private
 
     def render_latest_build_infos
       s = ''
@@ -396,15 +406,6 @@ class JenkinsJobPresenter < SimpleDelegator
     def getLiStyleForIcons
       "line-height:34px; margin:2px; vertical-align:middle; "
     end
-
-    def render_job_description
-      s = ''
-      if (!jenkins_job.nil?) and (!jenkins_job.description.nil?)
-      	 s << jenkins_job.description
-      end
-      s
-    end
-
 
     def build_history_list
       s = ''
@@ -488,28 +489,6 @@ class JenkinsJobPresenter < SimpleDelegator
       # data: {toggle: "modal", target: "#modal"} 
       # :data => { "toggle" => "tooltip", "original-title" => "Logout"},
       link_to(jenkins_history_title, jenkins_history_url, class: modal_box_css_class, title: jenkins_history_title)
-    end
-
-    def render_job_builds_infos_table
-	s = ''
-	s << content_tag(:th, l(:label_job_build_summary))
-	s << content_tag(:th, l(:label_job_build_duration))
-	s << content_tag(:th, l(:label_job_build_finished_at))
-
-	jenkins_job.builds.ordered.each do | build |
-		s << content_tag(:tr, render_job_builds_infos_table_row(build))
-	end
-
-	s.html_safe
-    end
-
-    def render_job_builds_infos_table_row(build)
-	s = ''
-	url = console_jenkins_job_path(jenkins_job.project, jenkins_job, build)
-	link_title = "##{build.number}"
-	s << content_tag(:td, link_to(link_title, url, title: link_title, class: 'modal-box-close-only'))
-	
-	s.html_safe
     end
 
     def render_changesets_list(changesets)

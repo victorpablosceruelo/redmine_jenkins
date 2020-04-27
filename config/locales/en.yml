@@ -55,6 +55,8 @@ en:
   label_job_build_summary: 'Summary'
   label_job_build_duration: 'Duration'
   label_job_build_finished_at: 'Finished at'
+  label_jenkins_job_summary: 'Summary'
+  label_job_stability: 'Job Stability'
   label_sonarqube_dashboard_url: SonarQube Dashboard
   label_see_sonarqube_dashboard_url: See SonarQube Dashboard
   label_no_sonarqube_report_available: No SonarQube report available
