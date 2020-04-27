@@ -2,7 +2,7 @@ require 'jenkins_api_client'
 
 class JenkinsClient
 
-  def initialize(url, opts = {})
+  def initialize(url, opts = {}, logger = nil)
     @url = url
 
     @options = {}
@@ -11,28 +11,37 @@ class JenkinsClient
     @options[:http_read_timeout] = opts[:http_read_timeout] || 60
     @options[:username] = opts[:username] if opts.has_key?(:username)
     @options[:password] = opts[:password] if opts.has_key?(:password)
-    # @options[:logger] = logger
+    
+    if (nil == logger)
+	@log_location = STDOUT unless @log_location
+	@log_level = Logger::INFO unless @log_level
+	@logger = Logger.new(@log_location)
+	@logger.level = @log_level
+    else 
+	@logger = logger
+    end
+
   end
 
 
   def connection
     client = JenkinsApi::Client.new(@options)
-    # client.logger = logger
+    client.logger = @logger
     return client
   rescue ArgumentError => e
 	errorMsg = "Connection error: " + e.message
-	logger.error errorMsg
-	logger.error e.backtrace.join("\n")
+	@logger.error errorMsg
+	@logger.error e.backtrace.join("\n")
 	raise RedmineJenkins::Error::JenkinsConnectionError, e
   rescue Unauthorized => e
 	errorMsg = "Connection error: " + e.message
-	logger.error errorMsg
-	logger.error e.backtrace.join("\n")
+	@logger.error errorMsg
+	@logger.error e.backtrace.join("\n")
 	raise RedmineJenkins::Error::JenkinsConnectionError, e
   rescue => e
 	errorMsg = "Connection error: " + e.message
-        logger.error errorMsg
-	logger.error e.backtrace.join("\n")
+        @logger.error errorMsg
+	@logger.error e.backtrace.join("\n")
 	raise e
   end
 

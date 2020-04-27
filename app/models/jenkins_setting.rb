@@ -84,7 +84,7 @@ class JenkinsSetting < ActiveRecord::Base
 	    	logger.info "JenkinsSetting::jenkins_client::JenkinsClient.new(#{url}, #{jenkins_options}) "
 	    end
 	    
-	    @jenkins_client ||= JenkinsClient.new(url, jenkins_options)
+	    @jenkins_client ||= JenkinsClient.new(url, jenkins_options, logger)
     end
 
 
