@@ -35,7 +35,7 @@ class JenkinsJobsController < ApplicationController
 		  logger.error "Could NOT create job."
 		  flash[:notice] = l(:notice_job_add_failed)
 		  # @jobs = available_jobs
-		  render_js_redirect
+		  render_html_redirect
 		  return
 	  end
 
@@ -44,7 +44,7 @@ class JenkinsJobsController < ApplicationController
       flash[:notice] = l(:notice_job_added)
       result = BuildManager.create_builds!(@job, logger)
       flash[:error] = result.message_on_errors if !result.success?
-      render_js_redirect
+      render_html_redirect
     else
 	    logger.error "Could NOT create job."
 	    @jobs = available_jobs
@@ -65,7 +65,7 @@ class JenkinsJobsController < ApplicationController
                   logger.error "Could NOT update job."
                   flash[:notice] = l(:notice_job_update_failed)
                   # @jobs = available_jobs
-                  render_js_redirect
+                  render_html_redirect
                   return
           end
 
@@ -73,7 +73,7 @@ class JenkinsJobsController < ApplicationController
       flash[:notice] = l(:notice_job_updated)
       result = BuildManager.update_all_builds!(@job, logger)
       flash[:error] = result.message_on_errors if !result.success?
-      render_js_redirect
+      render_html_redirect
     else
 	    logger.error "Could NOT update job."
 	    @jobs = available_jobs
@@ -137,7 +137,7 @@ class JenkinsJobsController < ApplicationController
     end
 
 
-    def render_js_redirect
+    def render_html_redirect
 	logger.info "JenkinsJobsController::render_js_redirect"
 	logger.info "window.location = #{success_url.to_json};"
 	# logger.info "respond_to: #{respond_to} "
@@ -152,6 +152,20 @@ class JenkinsJobsController < ApplicationController
 	redirect_to success_url
     end
 
+    def render_js_redirect
+        logger.info "JenkinsJobsController::render_js_redirect"
+        logger.info "window.location = #{success_url.to_json};"
+        # logger.info "respond_to: #{respond_to} "
+
+        respond_to do |format|
+                # logger.info "format: #{format} "
+                # format.html {redirect_to success_url}
+                format.js { render js: "window.location = #{success_url.to_json};" }
+                # format.html { render :new, :locals => { :career => @career} }
+        end
+
+        # redirect_to success_url
+    end
 
     def available_jobs
       jobs_list_filtered - @project.jenkins_jobs.map(&:name)
@@ -164,6 +178,9 @@ class JenkinsJobsController < ApplicationController
 	    invalid_subpath = ENV["GITLAB_REPOS_BASE_PATH"]
 	    if invalid_subpath.blank?
 		    invalid_subpath = "/"
+	    else
+		    # Security issues: Gitlab repos always go in lower case.
+		    invalid_subpath = invalid_subpath.downcase
 	    end
 
 	    paths_filter = []
@@ -175,7 +192,9 @@ class JenkinsJobsController < ApplicationController
 		    # logger.warn "repo.root_url: #{repo.root_url} "
 		    # logger.warn "repo: #{repo.to_s} "
 		    valid_path = getReposValidPath(repo.root_url, invalid_subpath)
-		    paths_filter.push valid_path
+		    if (nil != valid_path) and (! valid_path.blank?)
+		        paths_filter.push valid_path
+		    end
 	    end
 
 	    @project.jenkins_setting.get_jobs_list_filtered(paths_filter)
@@ -185,14 +204,27 @@ class JenkinsJobsController < ApplicationController
 
     def getReposValidPath(original_path, invalid_subpath)
 
-	    # if invalid_subpath.include?(invalid_subpath)
-	    if original_path.start_with?(invalid_subpath)
-		  path = original_path[invalid_subpath.length, original_path.length]
-	    else
-		  path = original_path 
+	    if (nil == original_path) or (original_path.blank?)
+		    return nil
 	    end
 
-	    logger.warn "getReposValidPath(#{original_path},#{invalid_subpath}) => #{path} "
+	    # Security issues: Gitlab repos always go in lower case.
+	    path = original_path.downcase
+
+	    # if invalid_subpath.include?(invalid_subpath)
+	    if path.start_with?(invalid_subpath)
+		    path = path[invalid_subpath.length, path.length]
+	    end
+
+	    if path.end_with?('.git/')
+		    path = path[0, (path.length() -5)]
+	    end
+
+	    if path.end_with?('.git')
+                    path = path[0, (path.length() -4)]
+            end
+
+	    logger.info "getReposValidPath(#{original_path}, #{invalid_subpath}) => #{path} "
 	    return path
     end
 
