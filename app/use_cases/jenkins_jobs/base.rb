@@ -478,6 +478,11 @@ module JenkinsJobs
 
 
       def color_to_state(color)
+	      color = color.downcase
+	      if color.include?('anime')
+		      color = color.gsub! '_anime' ''
+	      end
+
         case color
         when 'blue'
           'success'
@@ -485,6 +490,8 @@ module JenkinsJobs
           'failure'
         when 'notbuilt'
           'notbuilt'
+	when 'nobuilt'
+	  'notbuilt'
         when 'blue_anime'
           'running'
         when 'red_anime'

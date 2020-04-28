@@ -29,18 +29,25 @@ module JenkinsHelper
 		return ''
 	end
 
-    image_fileextension = ".png"
-    if state_color.downcase.include?('anime')
-      image_fileextension = ".gif"
-    end
+	state_color = state_color.downcase
 
-    image_file = state_color + image_fileextension
-    image_file = image_file.gsub(" ", "_")
+	if state_color.include?('notbuilt')
+		state_color = state_color.gsub("notbuilt", "nobuilt") 
+	end
 
-    image_tag(plugin_asset_link('redmine_jenkins', image_file), 
-              alt: description, class: 'state_color_image',
-              title: description, longdesc: description,
-              data: { title: description })
+	image_fileextension = ".png"
+	if state_color.include?('anime')
+		image_fileextension = ".gif"
+	end
+
+	image_file = state_color + image_fileextension
+	image_file = image_file.gsub(" ", "_")
+
+	image_tag(plugin_asset_link('redmine_jenkins', image_file), 
+        		alt: description, class: 'state_color_image',
+			title: description, longdesc: description,
+			data: { title: description })
+
   end
 
   def jenkins_logs_icon()
