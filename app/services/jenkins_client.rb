@@ -75,6 +75,16 @@ class JenkinsClient
     jobs
   end
 
+  def get_jobs_list_filtered(filter)
+  end
+
+  def number_of_builds_for(job_name)
+    job_suburl = name2url(job_name)
+    connection.job.list_details(job_suburl)['builds'].size rescue 0
+  end
+
+  private
+
   def get_jobs_list_aux(response_jobs_json, prefix, jobs_accumulator)
     response_jobs_json.each do |job|
       job_name = job["name"]
@@ -89,13 +99,17 @@ class JenkinsClient
         @logger.info "Job is a folder. Getting details of folder '#{new_prefix}' ('#{job_suburl}'): "
         details_response_json = connection.job.list_details(job_suburl)
         @logger.debug "Response JSON: '#{details_response_json}'"
-        
+
         jobs_accumulator = get_jobs_list_aux(details_response_json["jobs"], new_prefix, jobs_accumulator) rescue jobs_accumulator
       else
         jobs_accumulator << compute_new_prefix(prefix, job_name)
       end
     end
     jobs_accumulator
+  end
+
+  def name2url(job_name)
+    job_name.gsub('/', '/job/')
   end
 
   def compute_new_prefix(prefix, job_name)
@@ -105,15 +119,6 @@ class JenkinsClient
       new_prefix = prefix + '/' + job_name
     end
     new_prefix
-  end
-
-  def name2url(job_name)
-    job_name.gsub('/', '/job/')
-  end
-
-  def number_of_builds_for(job_name)
-    job_suburl = name2url(job_name)
-    connection.job.list_details(job_suburl)['builds'].size rescue 0
   end
 
 end

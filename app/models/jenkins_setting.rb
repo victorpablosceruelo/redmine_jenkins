@@ -22,6 +22,9 @@ class JenkinsSetting < ActiveRecord::Base
     jenkins_client.get_jobs_list
   end
 
+  def get_jobs_list_filtered(filter)
+    jenkins_client.get_jobs_list_filtered(filter)
+  end
 
   def number_of_builds_for(job_name)
     jenkins_client.number_of_builds_for(job_name)
