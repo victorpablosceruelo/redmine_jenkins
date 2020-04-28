@@ -18,7 +18,7 @@
       = link_to l(:label_add_jenkins_job), new_jenkins_job_path(@project), class: 'icon icon-add modal-box'
     - else
       :javascript
-        $.ajax({type: 'GET', url: '#{jenkins_settings_test_connection_path(@project)}', success: function(response) { window.location.href = "#{settings_project_path(@project, 'jenkins')}" }});
+        $.ajax({type: 'GET', url: '#{jenkins_settings_test_connection_path(@project)}', success: function(response) { window.location.href = "#{settings_project_path(@project)}" }});
 
   = render partial: 'projects/settings/jobs_list'
 
