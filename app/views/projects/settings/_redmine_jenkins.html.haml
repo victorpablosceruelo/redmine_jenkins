@@ -8,6 +8,7 @@
   %div{ class: 'box tabular' }
     = link_to l(:label_test_connection), jenkins_settings_test_connection_path(@project), class: 'icon icon-test-connection modal-box-close-only'
 
+  
 
 %fieldset{ class: 'box' }
   %legend
@@ -15,6 +16,9 @@
     - if !@project.jenkins_setting.nil?
       &nbsp;-&nbsp;
       = link_to l(:label_add_jenkins_job), new_jenkins_job_path(@project), class: 'icon icon-add modal-box'
+    - else
+      :javascript
+        $.ajax({type: 'GET', url: '#{jenkins_settings_test_connection_path(@project)}', success: function(response) { window.location.href = "#{settings_project_path(@project, 'jenkins')}" }});
 
   = render partial: 'projects/settings/jobs_list'
 

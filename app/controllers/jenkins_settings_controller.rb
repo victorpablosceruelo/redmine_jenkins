@@ -28,8 +28,10 @@ class JenkinsSettingsController < ApplicationController
 
 
     def load_jenkins_settings
+      logger.info "JenkinsSettingsController :: load_jenkins_settings"
       if @project.jenkins_setting.nil?
         @jenkins_setting = @project.build_jenkins_setting
+	@jenkins_setting.save
       else
         @jenkins_setting = @project.jenkins_setting
       end
