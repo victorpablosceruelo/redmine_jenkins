@@ -76,6 +76,8 @@ class JenkinsClient
   end
 
   def get_jobs_list_filtered(filter)
+	  @logger.warn "Filter #{filter}"
+	  return get_jobs_list
   end
 
   def number_of_builds_for(job_name)

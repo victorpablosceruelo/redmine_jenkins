@@ -53,7 +53,7 @@ class JenkinsJobsController < ApplicationController
 
 
   def edit
-    @jobs = @project.jenkins_setting.get_jobs_list
+    @jobs = jobs_list_filtered
   end
 
 
@@ -154,7 +154,46 @@ class JenkinsJobsController < ApplicationController
 
 
     def available_jobs
-      @project.jenkins_setting.get_jobs_list - @project.jenkins_jobs.map(&:name)
+      jobs_list_filtered - @project.jenkins_jobs.map(&:name)
+    end
+
+    def jobs_list_filtered
+
+	    # logger.warn "instance_methods: #{Repository::Git.instance_methods(true)} "
+
+	    invalid_subpath = ENV["GITLAB_REPOS_BASE_PATH"]
+	    if invalid_subpath.blank?
+		    invalid_subpath = "/"
+	    end
+
+	    paths_filter = []
+	    @project.repositories.each do |repo| 
+		    # logger.warn "identifier: #{repo.identifier} "
+		    # logger.warn "id: #{repo.id} "
+		    # logger.warn "url: #{repo.url} "
+		    # logger.warn "singleton_methods: #{repo.singleton_methods} "
+		    # logger.warn "repo.root_url: #{repo.root_url} "
+		    # logger.warn "repo: #{repo.to_s} "
+		    valid_path = getReposValidPath(repo.root_url, invalid_subpath)
+		    paths_filter.push valid_path
+	    end
+
+	    @project.jenkins_setting.get_jobs_list_filtered(paths_filter)
+    end
+
+    private
+
+    def getReposValidPath(original_path, invalid_subpath)
+
+	    # if invalid_subpath.include?(invalid_subpath)
+	    if original_path.start_with?(invalid_subpath)
+		  path = original_path[invalid_subpath.length, original_path.length]
+	    else
+		  path = original_path 
+	    end
+
+	    logger.warn "getReposValidPath(#{original_path},#{invalid_subpath}) => #{path} "
+	    return path
     end
 
 end
