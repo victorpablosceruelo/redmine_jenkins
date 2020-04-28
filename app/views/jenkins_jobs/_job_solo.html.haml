@@ -1,29 +1,31 @@
 - present job do |p|
   %tr{ id: p.job_id }
     %td
-      %h3= p.job_name
-      %h2= p.job_description
-      %table{ class: 'table table-job-summary' }
-        %tbody
-          %tr
-            %td{:rowspan => 2}= l(:label_jenkins_job_summary)
-            %td= p.job_last_build_status
-          %tr
-            %td= p.job_stability
-    %td
-      %table{ class: 'table table-job-builds' } 
-        %thead
-          %tr
-            %th{:colspan => 1}= l(:label_jenkins_build_id)
-            %th{:colspan => 1}= l(:label_jenkins_build_status)
-            %th{:colspan => 1}
-              %ul{class: 'jenkins-job-details-list'}
-                %li= l(:label_jenkins_build_duration)
-                %li= l(:label_jenkins_build_finished_at)
-        %tbody
-          - job.builds.each do |build|
-            = render partial: 'jenkins_jobs/job_build_solo', locals: { build: build }
-
-    %td= p.job_actions
+      %h3{ class: 'jenkins-job-title' }= p.job_name
+      %h2{ class: 'jenkins-job-description' }= p.job_description
+      %ul{ class: 'jenkins-job-summary-list' }
+        %li{ class: 'jenkins-job-summary-list-title' }= l(:label_jenkins_job_summary)
+        %li= p.job_last_build_status
+        %li= p.job_stability
+      %span{ class: 'last_data_update_warning_msg' }= p.job_last_data_update_warning_msg
+      %span{ class: 'last_data_update_warning_msg' }= l(:label_last_data_update_press_refresh_msg)
+    - if job.builds.length > 0
+      %td
+        %table{ class: 'table table-job-builds' } 
+          %thead
+            %tr
+              %th{:colspan => 1}= l(:label_jenkins_build_id)
+              %th{:colspan => 1}= l(:label_jenkins_build_status)
+              %th{:colspan => 1}= l(:label_jenkins_build_logs)
+              %th{:colspan => 1}
+                %ul{class: 'jenkins-job-details-list'}
+                  %li= l(:label_jenkins_build_duration)
+                  %li= l(:label_jenkins_build_finished_at)
+          %tbody
+            - job.builds.ordered.each do |build|
+              = render partial: 'jenkins_jobs/job_build_solo', locals: { build: build }
+    - else
+      %td=l(:label_no_job_builds_info_to_show) 
+    %td{ class: 'jenkins-job-actions-column' }= p.job_actions
     %td{ class: 'source_quality_report_job_table_cell' }= p.render_sonarqube_report
 

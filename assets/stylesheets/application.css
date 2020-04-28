@@ -53,7 +53,7 @@ div.changesets.invisible {
 }
 
 .job_status_line {
-  margin-left:20px; 
+  /* margin-left:20px; */
   vertical-align:middle; 
 }
 
@@ -75,8 +75,8 @@ th.jenkins_jobs_list_table_2nd_head {
 
 td.source_quality_report_job_table_cell {
   max-width: 50%;
-  min-width: 40%;
-  width: 50%; 
+  min-width: 30%;
+  /* width: 50%; */
 }
 
 table.source_code_quality_report {
@@ -144,10 +144,13 @@ span.symbol_E {
 
 span.last_data_update_warning_msg {
   display: block;
+  font-size: 125%;
 }
 
 span.link_to_sonarqube_dashboard_url {
   display: block;
+  font-size: 125%;
+  margin-top: 1em;
 }
 
 /* Affects too much dialogs ... :(
@@ -156,4 +159,44 @@ span.link_to_sonarqube_dashboard_url {
   max-height: 90%;
   overflow-y: scroll;
 }*/
+
+ul.jenkins-job-details-list {
+	list-style: none;
+	margin: 0;
+	padding: 0.1em;
+}
+
+ul.jenkins-job-summary-list {
+	list-style: none;
+	border-left: 1px solid black;
+	margin-left: 1.5em;
+	padding-left: 2.5em;
+}
+
+li.jenkins-job-summary-list-title {
+	margin-left: 0;
+	color: gray;
+}
+
+.jenkins-job-summary-list li {
+	margin-left: 0;
+}
+
+h3.jenkins-job-title {
+	text-align: left;
+}
+
+h2.jenkins-job-description {
+	text-align: left;
+}
+
+table.table-job-builds {
+	margin: 0.1em;
+}
+
+td.jenkins-job-actions-column, th.jenkins-job-actions-column {
+	text-align: center;
+	margin-left: 1em;
+	margin-right: 1em;
+}
 

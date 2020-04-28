@@ -64,11 +64,14 @@ en:
   label_see_jenkins_jobs_history: "See Jenkins Jobs' History"
   label_see_jenkins_job_build: 'See Jenkins Job Build '
   label_see_jenkins_job_build_logs: 'See Jenkins Job Build Logs '
+  label_no_job_builds_info_to_show: 'There is no job builds information to be shown.'
 
   label_jenkins_build_id: 'Id'
   label_jenkins_build_status: 'Status'
   label_jenkins_build_duration: 'Duration'
   label_jenkins_build_finished_at: 'Finished at'
+  label_jenkins_build_logs: 'Logs'
+  label_jenkins_job_build_logs_of: 'Logs of'
 
   notice_job_added: Job added
   notice_job_add_failed: Failed to add job
@@ -103,7 +106,9 @@ en:
   label_sources_violations: Violations
   label_sources_report_cell_no_data: no data 
   label_sources_report_last_update: Last Update on
-  last_data_update_warning_msg: "Last update of the info shown here was on %{date}. Press refresh to see more up-to-date results."
+  label_last_data_update_warning_msg: "Last update of the info shown here was on %{date}. "
+  label_last_data_update_press_refresh_msg: 'Press refresh to see more up-to-date results.'
+  label_see_more_sonarqube_analisis_details_at: "To get more details on the SonarQube source code analysis, go to %{link}"
   label_sources_jenkins_build_date: Jenkins' last build date 
 
   ### ACTIVITY
@@ -133,3 +138,6 @@ en:
       update_last_build:
         success: "Job '%{jenkins_job}' last build successfully updated"
         failed: "Errors while updating job '%{jenkins_job}' last build : %{errors}"
+
+  ## END.
+

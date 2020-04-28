@@ -16,6 +16,10 @@ class JenkinsBuildPresenter < SimpleDelegator
     convert_date_to_str(jenkins_job_build.finished_at)
   end
 
+  def result
+	  jenkins_job_build.result
+  end
+
   def duration
         s = ''
         if !jenkins_job_build.duration.nil?
@@ -30,10 +34,10 @@ class JenkinsBuildPresenter < SimpleDelegator
 	# img_desc = get_job_latest_build_image_description(jenkins_job)
 
 	s = ''
-	if (jenkins_job_build.number == jenkins_job_build.jenkins_job.latest_build_number)
-		img_desc = get_build_image_description(jenkins_job_build.jenkins_job.state, jenkins_job_build.jenkins_job.state_color)
-		s << content_tag(:span, state_color_to_image(jenkins_job_build.jenkins_job.state_color, img_desc), class: 'job_status_line')
-	end
+	# if (jenkins_job_build.number == jenkins_job_build.jenkins_job.latest_build_number)
+	#	img_desc = get_build_image_description(jenkins_job_build.jenkins_job.state, jenkins_job_build.jenkins_job.state_color)
+	#	s << content_tag(:span, state_color_to_image(jenkins_job_build.jenkins_job.state_color, img_desc), class: 'job_status_line')
+	# end
 
 	s << jenkins_job_state_to_label(jenkins_job_build.result)
 	# s << content_tag(:span, link_to_jenkins_job_latest_build_console(jenkins_job).html_safe, class: 'job_status_line')
@@ -46,6 +50,15 @@ class JenkinsBuildPresenter < SimpleDelegator
         s << content_tag(:span, link_to(console_link_title, console_url, title: console_window_title, class: 'modal-box-close-only'))
 
 	s << content_tag(:span, '', class: 'icon icon-running') if jenkins_job_build.building?
+	s.html_safe
+  end
+
+  def view_build_logs
+	s = ''
+	console_url = console_jenkins_job_path(jenkins_job_build.jenkins_job.project, jenkins_job_build.jenkins_job, jenkins_job_build)
+        console_window_title = l(:label_jenkins_job_build_logs_of) + " ##{jenkins_job_build.number}"
+        # console_link_title = jenkins_logs_icon
+	s << content_tag(:span, link_to(console_window_title, console_url, title: console_window_title, class: 'modal-box-close-only'))
 	s.html_safe
   end
 

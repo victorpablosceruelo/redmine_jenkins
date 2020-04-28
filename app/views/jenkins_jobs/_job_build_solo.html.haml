@@ -1,8 +1,11 @@
 - present build do |b|
   %tr{ id: b.number }
     %td= b.number
-    %td= b.building_result
-    %td 
-      %span= b.duration
-      %span= b.finished_at
+    %td
+      %span{ class: "label label-#{state_to_css_class(b.result)}" }= b.result.capitalize
+    %td= b.view_build_logs
+    %td
+      %ul{class: 'jenkins-job-details-list'}
+        %li= b.duration
+        %li= b.finished_at
 

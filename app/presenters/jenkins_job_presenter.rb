@@ -28,6 +28,9 @@ class JenkinsJobPresenter < SimpleDelegator
       s
   end
 
+  def job_last_data_update_warning_msg()
+      l(:label_last_data_update_warning_msg, date: convert_date_to_str(jenkins_job.sources_report_last_update))
+  end
 
   def job_last_build_status
       img_desc = get_job_latest_build_image_description(jenkins_job)
@@ -57,8 +60,8 @@ class JenkinsJobPresenter < SimpleDelegator
     if (!('' == jenkins_job.sonarqube_dashboard_url))
       s = ''
       s << content_tag(:table, render_sonarqube_report_details, class: 'source_code_quality_report')
-      s << content_tag(:span, last_data_update_warning_msg, class: 'last_data_update_warning_msg')
-      s << content_tag(:span, link_to_sonarqube_dashboard_url(jenkins_job.sonarqube_dashboard_url).html_safe, class: 'link_to_sonarqube_dashboard_url')
+#      s << content_tag(:span, last_data_update_warning_msg, class: 'last_data_update_warning_msg')
+      s << content_tag(:span, render_sonarqube_link_to_dashboard_msg, class: 'link_to_sonarqube_dashboard_url')
       return s.html_safe
     else
       return content_tag(:span, l(:label_no_sonarqube_report_available))
@@ -67,6 +70,14 @@ class JenkinsJobPresenter < SimpleDelegator
 
 
   private
+
+	def render_sonarqube_link_to_dashboard_msg
+		link = link_to_sonarqube_dashboard_url(jenkins_job.sonarqube_dashboard_url)
+
+		s = ''
+		s << l(:label_see_more_sonarqube_analisis_details_at, link: link) 
+		s.html_safe
+	end
 
   def render_sonarqube_report_details
     if (jenkins_job == nil)
@@ -416,7 +427,7 @@ class JenkinsJobPresenter < SimpleDelegator
         end
       end
   
-      s << content_tag(:li, link_to_history, style: getLiStyleForIcons)
+      # s << content_tag(:li, link_to_history, style: getLiStyleForIcons)
       # s << content_tag(:li, render_job_history, style: getLiStyleForIcons)
       s.html_safe
     end
@@ -543,7 +554,4 @@ class JenkinsJobPresenter < SimpleDelegator
       end
     end
 
-    def last_data_update_warning_msg()
-      l(:last_data_update_warning_msg, date: convert_date_to_str(jenkins_job.sources_report_last_update))
-    end
 end
