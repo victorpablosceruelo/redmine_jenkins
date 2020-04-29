@@ -43,10 +43,13 @@ redmine$ bundle exec rake redmine:plugins:migrate RAILS_ENV=production NAME=redm
 
 
 ENV['JENKINS_URL'] ||= 'https://des-jenkins.scae.redsara.es/'
-ENV['JENKINS_USER'] ||= 'admin'
-ENV['JENKINS_PWD'] ||= 'admin'
-ENV['SONARQUBE_USER'] ||= 'admin'
-ENV['SONARQUBE_PWD'] ||= 'admin'
+ENV['JENKINS_USER'] ||= 'jenkinsUserRxFullVisibility'
+ENV['JENKINS_TOKEN'] ||= 'token-generated-for-user-jenkinsUserRxFullVisibility'
+
+ENV['SONARQUBE_USER'] ||= 'sonarUserRoFullVisibility'
+ENV['SONARQUBE_PWD'] ||= 'pwd-for-user-sonarUserRoFullVisibility'
+
+ENV['GITLAB_REPOS_BASE_PATH'] ||= '/opt/repositoriosGitLab/'
 
 [root@ADGEREDINFDESM1 redmine_jenkins]\# 
 

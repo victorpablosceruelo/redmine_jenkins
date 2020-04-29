@@ -1,8 +1,8 @@
 - present job do |p|
   %tr{ id: p.job_id }
     %td
-      %h3{ class: 'jenkins-job-title' }= p.job_name
-      %h2{ class: 'jenkins-job-description' }= p.job_description
+      %h2{ class: 'jenkins-job-title' }= p.job_name
+      %h3{ class: 'jenkins-job-description' }= p.job_description
       %ul{ class: 'jenkins-job-summary-list' }
         %li{ class: 'jenkins-job-summary-list-title' }= l(:label_jenkins_job_summary)
         %li= p.job_last_build_status

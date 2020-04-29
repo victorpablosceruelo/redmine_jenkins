@@ -194,7 +194,7 @@ module JenkinsJobs
             end
           end
         rescue => e
-          errorMsg = "getSonarqubeDashboardUrl: " + e.message
+          errorMsg = "getSonarqubeDashboardUrl: #{e.message} " 
           @errors << errorMsg
           @logger.error errorMsg
           @logger.error e.backtrace.join("\n")
@@ -219,7 +219,7 @@ module JenkinsJobs
             end
           end 
         rescue => e
-          errorMsg = "getSonarqubeDashboardUrlAux: " + e.message
+          errorMsg = "getSonarqubeDashboardUrlAux: #{e.message} "
           @errors << errorMsg
           @logger.error errorMsg
           @logger.error e.backtrace[0]
@@ -247,12 +247,12 @@ module JenkinsJobs
             "alert_status,lines,reliability_rating,bugs,security_rating,vulnerabilities," +
             "sqale_rating,sqale_debt_ratio,sqale_index,code_smells,violations," +
             "coverage,tests,skipped_tests,complexity,duplicated_lines_density"
-          @logger.info "update_sonarqube_metrics_if_possible: url to retrieve sonarqube metrics: " + sonarqube_api_url
+          @logger.info "update_sonarqube_metrics_if_possible: url to retrieve sonarqube metrics: #{sonarqube_api_url} "
 
           response_body = fetch_url(sonarqube_api_url)
 
         rescue => e
-          errorMsg = "update_sonarqube_metrics_if_possible: fetch_url: " + e.message
+          errorMsg = "update_sonarqube_metrics_if_possible: fetch_url: #{e.message} "
           @errors << errorMsg
 	  @logger.error "-----"
           @logger.error errorMsg
@@ -271,7 +271,7 @@ module JenkinsJobs
 			@logger.debug jsonResult
 		end
 	rescue => e
-		errorMsg = "update_sonarqube_metrics_if_possible: JSON.parse: " + e.message
+		errorMsg = "update_sonarqube_metrics_if_possible: JSON.parse: #{e.message} "
 		@errors << errorMsg
 		@logger.error errorMsg
 		@logger.error e.backtrace[0]
@@ -283,7 +283,7 @@ module JenkinsJobs
 			saveMetrics jsonResult
 		end
 	rescue => e
-                errorMsg = "update_sonarqube_metrics_if_possible: saveMetrics: " + e.message
+                errorMsg = "update_sonarqube_metrics_if_possible: saveMetrics: #{e.message} "
                 @errors << errorMsg
                 @logger.error errorMsg
                 @logger.error e.backtrace[0]
@@ -352,10 +352,10 @@ module JenkinsJobs
 
       def saveMetrics(jsonResult)
         if (nil == jsonResult['component'])
-          @errors << 'No component section, in json retrieved: ' + jsonResult
+          @errors << "No component section, in json retrieved: #{jsonResult} "
         end
         if (nil == jsonResult['component']['measures'])
-          @errors << 'No measures section in component section, in json retrieved: ' + jsonResult
+          @errors << "No measures section in component section, in json retrieved: #{jsonResult} "
         end
 
         no_metric_read=true
@@ -499,7 +499,7 @@ module JenkinsJobs
         when 'yellow'
           'unstable'
         else
-          'no color->state for ' + color
+          "no color->state for #{color} "
         end
       end
 

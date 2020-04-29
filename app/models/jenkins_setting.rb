@@ -39,7 +39,7 @@ class JenkinsSetting < ActiveRecord::Base
   end
 
   def auth_password
-	  tmp = ENV["JENKINS_PWD"]
+	  tmp = ENV["JENKINS_TOKEN"]
           if ! tmp.blank?
                   return tmp
           end
