@@ -12,8 +12,10 @@ Redmine::Plugin.register :redmine_jenkins do
   url 'https://gitlab-ic.scae.redsara.es/OFICINA_TECNICA/redmine_jenkins'
   author_url 'https://gitlab-ic.scae.redsara.es/OFICINA_TECNICA/redmine_jenkins'
 
-  project_module :cicd do
+  project_module :jenkins do
+    permission :view_jenkins_jobs,     {:jenkins  => [:index]}
     permission :build_jenkins_jobs,    {:jenkins  => [:start_build]}
+    permission :view_build_activity,   {:activity => [:index]}
     permission :edit_jenkins_settings, {:jenkins_settings => [:save_settings]}
   end
 
