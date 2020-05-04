@@ -5,17 +5,15 @@ require 'redmine'
 require 'redmine_jenkins'
 
 Redmine::Plugin.register :redmine_jenkins do
-  name 'Redmine Jenkins plugin'
+  name 'Redmine IC/DC plugin (Jenkins and SonarQube)'
   author 'Toshiyuki Ando r-labs, Nicolas Rodriguez'
-  description 'This is a Jenkins plugin for Redmine'
-  version '1.0-devel'
-  url 'https://github.com/jbox-web/redmine_jenkins'
-  author_url 'https://github.com/jbox-web'
+  description 'This is a Redmine plugin to manage the IC/DC workflows'
+  version '2.0.0'
+  url 'https://gitlab-ic.scae.redsara.es/OFICINA_TECNICA/redmine_jenkins'
+  author_url 'https://gitlab-ic.scae.redsara.es/OFICINA_TECNICA/redmine_jenkins'
 
-  project_module :jenkins do
-    permission :view_jenkins_jobs,     {:jenkins  => [:index]}
+  project_module :cicd do
     permission :build_jenkins_jobs,    {:jenkins  => [:start_build]}
-    permission :view_build_activity,   {:activity => [:index]}
     permission :edit_jenkins_settings, {:jenkins_settings => [:save_settings]}
   end
 

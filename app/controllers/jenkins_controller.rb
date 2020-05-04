@@ -3,7 +3,6 @@ class JenkinsController < ApplicationController
 
   # Redmine ApplicationController method
   before_action :find_project_by_project_id
-  before_action :can_view_jenkins_jobs
   before_action :find_jenkins_settings
 
   require 'will_paginate/array'
@@ -43,11 +42,6 @@ class JenkinsController < ApplicationController
         flash.now[:warning] = l(:error_no_settings, url: settings_project_path(@project, 'jenkins'))
         render action: 'jenkins_instructions'
       end
-    end
-
-
-    def can_view_jenkins_jobs
-      render_403 unless User.current.allowed_to?(:view_jenkins_jobs, @project)
     end
 
 end

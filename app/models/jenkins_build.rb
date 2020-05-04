@@ -19,8 +19,9 @@ class JenkinsBuild < ActiveRecord::Base
   scope :ordered, -> { order('number DESC')  }
 
   scope :visible, lambda { |*args|
-    joins(jenkins_job: :project).
-    where(Project.allowed_to_condition(args.shift || User.current, :view_build_activity, *args))
+    joins(jenkins_job: :project)
+    #.
+#    where(Project.allowed_to_condition(args.shift || User.current, :view_build_activity, *args))
   }
 
   ## Redmine Events
@@ -34,7 +35,7 @@ class JenkinsBuild < ActiveRecord::Base
   # Redmine 2.X
   if Rails::VERSION::MAJOR == 3
     acts_as_activity_provider :type         => 'build_activity',
-                              :permission   => :view_build_activity,
+#                              :permission   => :view_build_activity,
                               :timestamp    => "#{table_name}.finished_at",
                               :author_key   => :author_id,
                               :find_options => {:include => {:jenkins_job => :project}}

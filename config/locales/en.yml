@@ -1,4 +1,9 @@
 en:
+  module_name_cicd: 'CI/CD'
+  module_cicd: 'CI/CD'
+  project_module_cicd: 'CI/CD'
+  project_module_jenkins: 'CI/CD'
+
   label_jenkins: Jenkins
   label_sonarqube: SonarQube
   label_ci_cd: CI/CD
