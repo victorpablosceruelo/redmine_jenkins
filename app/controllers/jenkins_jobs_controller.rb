@@ -33,7 +33,7 @@ class JenkinsJobsController < ApplicationController
 	  # Security issues
 	  if ! User.current.allowed_to?(:edit_jenkins_settings, @project)
 		  logger.error "Could NOT create job."
-		  flash[:notice] = l(:notice_job_add_failed)
+		  flash[:error] = l(:notice_job_add_failed)
 		  # @jobs = available_jobs
 		  render_html_redirect
 		  return
@@ -47,7 +47,9 @@ class JenkinsJobsController < ApplicationController
       render_html_redirect
     else
 	    logger.error "Could NOT create job."
-	    @jobs = available_jobs
+	    flash[:error] = l(:notice_job_add_failed)
+	    # @jobs = available_jobs
+	    render_html_redirect
     end
   end
 
@@ -63,7 +65,7 @@ class JenkinsJobsController < ApplicationController
 	  # Security issues
           if ! User.current.allowed_to?(:edit_jenkins_settings, @project)
                   logger.error "Could NOT update job."
-                  flash[:notice] = l(:notice_job_update_failed)
+                  flash[:error] = l(:notice_job_update_failed)
                   # @jobs = available_jobs
                   render_html_redirect
                   return
@@ -85,7 +87,7 @@ class JenkinsJobsController < ApplicationController
 	if User.current.allowed_to?(:edit_jenkins_settings, @project)
     		flash[:notice] = l(:notice_job_deleted) if @job.destroy
 	else
-		flash[:notice] = l(:notice_job_delete_failed)
+		flash[:error] = l(:notice_job_delete_failed)
 	end
     render_js_redirect
   end
