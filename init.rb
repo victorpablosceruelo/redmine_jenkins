@@ -5,9 +5,9 @@ require 'redmine'
 require 'redmine_jenkins'
 
 Redmine::Plugin.register :redmine_jenkins do
-  name 'Redmine IC/DC plugin (Jenkins and SonarQube)'
-  author 'Toshiyuki Ando r-labs, Nicolas Rodriguez'
-  description 'This is a Redmine plugin to manage the IC/DC workflows'
+  name 'Redmine CI/CD plugin (Jenkins and SonarQube)'
+  author 'From GFI for SGAD - OT'
+  description 'This is a Redmine plugin to manage the CI/CD workflows'
   version '2.0.0'
   url 'https://gitlab-ic.scae.redsara.es/OFICINA_TECNICA/redmine_jenkins'
   author_url 'https://gitlab-ic.scae.redsara.es/OFICINA_TECNICA/redmine_jenkins'
