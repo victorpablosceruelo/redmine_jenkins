@@ -87,22 +87,23 @@ class JenkinsClient
   private
 
   def get_jobs_list_aux(response_jobs_json, prefix, filter, jobs_accumulator)
-	@logger.info "Filter #{filter}"
+	# @logger.info "Filter #{filter}"
+	filtered_out_jobs = ''
 	response_jobs_json.each do |job|
            job_name = job["name"]
            new_prefix = compute_new_prefix(prefix, job_name)
 
-	   @logger.info "get_jobs_list_aux: new_prefix: #{new_prefix} "
-           @logger.debug "get_jobs_list: If isFolder('#{job["name"]}') -> getSubfolders "
-           @logger.debug "JSON: '#{job}'"
+	   # @logger.info "get_jobs_list_aux: new_prefix: #{new_prefix} "
+           # @logger.debug "get_jobs_list: If isFolder('#{job["name"]}') -> getSubfolders "
+           # @logger.debug "JSON: '#{job}'"
 
 
            if (! job_path_is_filtered_out(new_prefix, filter))
               if job["_class"] == "com.cloudbees.hudson.plugins.folder.Folder"
                  job_suburl = name2url(new_prefix)
-                 @logger.info "Job is a folder. Getting details of folder '#{new_prefix}' ('#{job_suburl}'): "
+                 # @logger.debug "Job is a folder. Getting details of folder '#{new_prefix}' ('#{job_suburl}'): "
                  details_response_json = connection.job.list_details(job_suburl)
-                 @logger.debug "Response JSON: '#{details_response_json}'"
+                 # @logger.debug "Response JSON: '#{details_response_json}'"
 
                  jobs_accumulator = get_jobs_list_aux(details_response_json["jobs"], new_prefix, filter, jobs_accumulator) rescue jobs_accumulator
               else
@@ -110,10 +111,14 @@ class JenkinsClient
               end
 
            else
-	      @logger.info "Job path has been filtered: #{new_prefix} Filter: #{filter}"
+		filtered_out_jobs << "Job: #{job_name} [ #{new_prefix} ]; "
+		# @logger.info "Job path has been filtered: #{new_prefix} Filter: #{filter}"
            end
         end
-        jobs_accumulator
+	@logger.info "Filter #{filter}"
+	@logger.info "Filtered out jobs: #{filtered_out_jobs} "
+	@logger.info "Valid jobs found: #{jobs_accumulator} "
+        return jobs_accumulator
   end
 
   def job_path_is_filtered_out(new_prefix, filter)
