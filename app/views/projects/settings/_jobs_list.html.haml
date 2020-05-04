@@ -24,7 +24,6 @@
             %td= @jenkins_setting.number_of_builds_for(job.name)
             %td= job.builds_to_keep
             %td
-              = link_to l(:button_edit), edit_jenkins_job_path(@project, job), class: 'icon icon-edit modal-box'
               = link_to l(:button_delete), jenkins_job_path(@project, job),
                                            remote:  true,
                                            method:  :delete,
