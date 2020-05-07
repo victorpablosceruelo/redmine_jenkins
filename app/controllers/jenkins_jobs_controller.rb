@@ -39,6 +39,14 @@ class JenkinsJobsController < ApplicationController
 		  return
 	  end
 
+
+    if not jobIsInValidJobsList(params[:jenkins_jobs])
+	    logger.error "SECURITY_ISSUE: #{l(:error_job_does_not_belong_to_you)} User: #{User.current.to_s} ( #{User.current.login.to_s} ) tried to add job #{params[:jenkins_jobs].to_s} "
+	    flash[:error] = l(:error_job_does_not_belong_to_you)
+	    render_html_redirect
+	    return
+    end
+
     @job = @project.jenkins_jobs.new(params[:jenkins_jobs])
     if @job.save
       flash[:notice] = l(:notice_job_added)
@@ -167,6 +175,15 @@ class JenkinsJobsController < ApplicationController
         end
 
         # redirect_to success_url
+    end
+
+    def jobIsInValidJobsList(job)
+	    jobs_list_filtered.each do |jobName|
+		if (jobName == job[:name])
+			return true
+		end
+	    end
+	    return false
     end
 
     def available_jobs

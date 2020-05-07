@@ -85,6 +85,8 @@ en:
   notice_job_updated: Job updated
   notice_job_update_failed: Failed to update job
 
+  error_job_does_not_belong_to_you: 'You cannot add a job which is not for the repositories configured for your project.'
+
   field_repository: Repository
   field_job_name: Job name
   field_builds_to_keep: Builds to keep
