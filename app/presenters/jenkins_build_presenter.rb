@@ -45,7 +45,7 @@ class JenkinsBuildPresenter < SimpleDelegator
         console_window_title = "Console of build ##{jenkins_job_build.number}"
 	console_link_title = jenkins_logs_icon
 	# console_link_title = 'View console'
-        s << content_tag(:span, link_to(console_link_title, console_url, title: console_window_title, class: 'modal-box-close-only'))
+        s << content_tag(:span, link_to(console_link_title, console_url, title: console_window_title, class: 'modal-box-jenkins-build-logs  modal-box-close-only'))
 
 	s << content_tag(:span, '', class: 'icon icon-running') if jenkins_job_build.building?
 	s.html_safe
@@ -56,7 +56,7 @@ class JenkinsBuildPresenter < SimpleDelegator
 	console_url = console_jenkins_job_path(jenkins_job_build.jenkins_job.project, jenkins_job_build.jenkins_job, jenkins_job_build)
         console_window_title = l(:label_jenkins_job_build_logs_of) + " ##{jenkins_job_build.number}"
         # console_link_title = jenkins_logs_icon
-	s << content_tag(:span, link_to(console_window_title, console_url, title: console_window_title, class: 'modal-box-close-only'))
+	s << content_tag(:span, link_to(console_window_title, console_url, title: console_window_title, class: 'modal-box-jenkins-build-logs modal-box-close-only'))
 	s.html_safe
   end
 

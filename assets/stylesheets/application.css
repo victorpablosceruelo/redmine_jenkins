@@ -153,12 +153,12 @@ span.link_to_sonarqube_dashboard_url {
   margin-top: 1em;
 }
 
-/* Affects too much dialogs ... :(
-.ui-dialog {
-  max-width: 90%;
+/* WARNING: This affects too much dialogs ... :( */
+.controller-jenkins .ui-dialog {
+  max-width: 95%;
   max-height: 90%;
   overflow-y: scroll;
-}*/
+}
 
 ul.jenkins-job-details-list {
 	list-style: none;
@@ -199,4 +199,9 @@ td.jenkins-job-actions-column, th.jenkins-job-actions-column {
 	margin-left: 1em;
 	margin-right: 1em;
 }
+
+.modal-box-jenkins-build-logs {
+	max-width: 100%;
+}
+
 
