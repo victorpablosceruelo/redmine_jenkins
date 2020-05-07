@@ -52,10 +52,6 @@ class JenkinsJobPresenter < SimpleDelegator
     s.html_safe
   end
  
-  def latest_build_infos
-    content_tag(:ul, render_latest_build_infos, class: 'list-unstyled', style: "line-height:34px")
-  end
-
   def render_sonarqube_report
     if (!('' == jenkins_job.sonarqube_dashboard_url))
       s = ''
@@ -354,32 +350,6 @@ class JenkinsJobPresenter < SimpleDelegator
 
 
 
-    def render_latest_build_infos
-      s = ''
-      s << content_tag(:li, render_jenkins_job_latest_build_link_and_state(jenkins_job))
-
-      s << content_tag(:li, latest_build_duration) 
-      s << content_tag(:li, latest_build_date) 
-
-      # s << content_tag(:li, link_to_console_output)
-      s << content_tag(:li, '', class: 'icon icon-running') if jenkins_job.state == 'running'
-
-      s.html_safe
-    end
-
-
-    def render_jenkins_job_latest_build_link_and_state(jenkins_job)
-      img_desc = get_job_latest_build_image_description(jenkins_job)
-
-      s = ''
-      s << content_tag(:span, link_to_jenkins_job_latest_build(jenkins_job).html_safe, class: 'label label-info')
-      s << content_tag(:span, state_color_to_image(jenkins_job.state_color, img_desc), class: 'job_status_line')
-      # s << content_tag(:span, link_to_jenkins_job_latest_build_console(jenkins_job).html_safe, class: 'job_status_line')
-      s << content_tag(:span, link_to_latest_build_console_output.html_safe, class: 'job_status_line')
-
-      s.html_safe
-    end
-
     def get_job_latest_build_image_description(jenkins_job)
 	s = ''
 	if (! jenkins_job.state.blank?)
@@ -446,35 +416,6 @@ class JenkinsJobPresenter < SimpleDelegator
 	end
 	s.html_safe
     end
-
-    def link_to_jenkins_job_latest_build_console
-        if ! jenkins_job.latest_build_number.nil?
-                url    = jenkins_job.latest_build_number == 0 ? 'javascript:void(0);' : jenkins_job.latest_build_url + '/console'
-                target = jenkins_job.latest_build_number == 0 ? '' : '_blank'
-                return link_to jenkins_logs_icon, url, target: target
-                # Attributes included in image: longdesc: longdesc, alt: longdesc, title: longdesc
-        end
-        ''
-    end
-
-    def link_to_latest_build_console_output
-	link_title = l(:label_see_console_output)
-	if ! jenkins_job.latest_build_number.nil?
-		if jenkins_job.latest_build_number == 0
-			url = 'javascript:void(0);'
-			return link_to(link_title, url, title: link_title, class: 'modal-box-close-only')
-		else
-			url = console_jenkins_job_path(jenkins_job.project, jenkins_job)
-			return link_to(link_title, url, title: link_title, class: 'modal-box-close-only')
-
-			# return link_to(link_title, url, title: link_title, class: 'modal-box-close-only')
-		end
-	end 
-
-	# title: l(:label_see_console_output), remote: true, target:'_blank'
-	return ''
-    end
-
 
     def link_to_build
       link_to(fa_icon('fa-gears'), build_jenkins_job_path(jenkins_job.project, jenkins_job), title: l(:label_build_now), remote: true)

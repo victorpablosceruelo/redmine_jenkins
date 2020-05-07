@@ -40,8 +40,6 @@ class JenkinsBuildPresenter < SimpleDelegator
 	# end
 
 	s << jenkins_job_state_to_label(jenkins_job_build.result)
-	# s << content_tag(:span, link_to_jenkins_job_latest_build_console(jenkins_job).html_safe, class: 'job_status_line')
-	# s << content_tag(:span, link_to_latest_build_console_output.html_safe, class: 'job_status_line')
 	
 	console_url = console_jenkins_job_path(jenkins_job_build.jenkins_job.project, jenkins_job_build.jenkins_job, jenkins_job_build)
         console_window_title = "Console of build ##{jenkins_job_build.number}"
