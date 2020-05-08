@@ -122,10 +122,10 @@ en:
   label_build: Build
 
   ### PERMISSIONS
-  permission_view_jenkins_jobs: View builds
-  permission_build_jenkins_jobs: Start build
+  permission_view_jenkins_jobs: 'View CI/CD tab (*NOT* cfg subtab)'
+  permission_build_jenkins_jobs: 'Start Jenkins build'
   permission_view_build_activity: See build activity
-  permission_edit_jenkins_settings: Edit settings
+  permission_edit_jenkins_settings: 'Edit CI/CD settings in project cfg'
 
   ### QUERY
   field_jenkins_job: Job
