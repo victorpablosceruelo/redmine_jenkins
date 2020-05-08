@@ -377,7 +377,7 @@ class JenkinsJobPresenter < SimpleDelegator
 
     def job_actions_list
       s = ''
-      s << content_tag(:li, link_to_refresh, style: getLiStyleForIcons)
+      # s << content_tag(:li, link_to_refresh, style: getLiStyleForIcons)
       if User.current.allowed_to?(:build_jenkins_jobs, jenkins_job.project)
         s << content_tag(:li, link_to_build, style: getLiStyleForIcons)
       end
