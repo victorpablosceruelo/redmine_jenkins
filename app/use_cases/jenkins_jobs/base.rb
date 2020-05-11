@@ -253,7 +253,7 @@ module JenkinsJobs
 
         rescue => e
           errorMsg = "update_sonarqube_metrics_if_possible: fetch_url: #{e.message} "
-          @errors << errorMsg
+          # @errors << errorMsg
 	  @logger.error "-----"
           @logger.error errorMsg
 	  @logger.error "-----"
@@ -272,7 +272,7 @@ module JenkinsJobs
 		end
 	rescue => e
 		errorMsg = "update_sonarqube_metrics_if_possible: JSON.parse: #{e.message} "
-		@errors << errorMsg
+		# @errors << errorMsg
 		@logger.error errorMsg
 		@logger.error e.backtrace[0]
 		@logger.error e.backtrace
@@ -284,7 +284,7 @@ module JenkinsJobs
 		end
 	rescue => e
                 errorMsg = "update_sonarqube_metrics_if_possible: saveMetrics: #{e.message} "
-                @errors << errorMsg
+                # @errors << errorMsg
                 @logger.error errorMsg
                 @logger.error e.backtrace[0]
                 @logger.error e.backtrace
@@ -339,23 +339,25 @@ module JenkinsJobs
           location = response['location']
           errorMsg = "Server response: redirection from #{url} to #{location}. "
           @logger.warn errorMsg
-          @errors << errorMsg
+          # @errors << errorMsg
           return fetch_url(location, limit - 1)
         else
 	  @logger.warn "response: #{response} "
           errorMsg = "Server returned error when querying url: #{url} (#{uri.path}). #{response}"
           @logger.warn errorMsg
-          @errors << errorMsg
+          # @errors << errorMsg
           return nil
         end
       end
 
       def saveMetrics(jsonResult)
         if (nil == jsonResult['component'])
-          @errors << "No component section, in json retrieved: #{jsonResult} "
+          @logger.error "No component section, in json retrieved: #{jsonResult} "
+	  return
         end
         if (nil == jsonResult['component']['measures'])
-          @errors << "No measures section in component section, in json retrieved: #{jsonResult} "
+          @logger.error "No measures section in component section, in json retrieved: #{jsonResult} "
+	  return
         end
 
         no_metric_read=true
@@ -363,7 +365,7 @@ module JenkinsJobs
           metricName = measure["metric"]
           metricValue = measure["value"]
           if (! update_jenkins_job_metric(metricName, metricValue))
-            @errors << "Retrieved metric has no valid name. Value not saved. Measure json: #{measure}"
+            @logger.error "Retrieved metric has no valid name. Value not saved. Measure json: #{measure}"
           else
             no_metric_read=false
           end
