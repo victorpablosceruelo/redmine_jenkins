@@ -81,17 +81,6 @@ module JenkinsHelper
   end
 
 
-  def link_to_jenkins_job_latest_build_console(job)
-	if ! job.latest_build_number.nil?
-    		url    = job.latest_build_number == 0 ? 'javascript:void(0);' : job.latest_build_url + '/console'
-    		target = job.latest_build_number == 0 ? '' : '_blank'
-    		return link_to jenkins_logs_icon, url, target: target
-    		# Attributes included in image: longdesc: longdesc, alt: longdesc, title: longdesc
-	end
-	''
-  end
-
-
   def link_to_sonarqube_dashboard_url(sonarqube_dashboard_url)
     longdesc = l(:label_see_sonarqube_dashboard_url)
     link_to l(:label_sonarqube_dashboard_url), sonarqube_dashboard_url, target: '_blank', longdesc: longdesc, alt: longdesc, title: longdesc
