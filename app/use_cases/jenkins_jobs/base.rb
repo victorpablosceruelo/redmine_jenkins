@@ -9,14 +9,12 @@ module JenkinsJobs
     include Redmine::I18n
 
     attr_reader :jenkins_job
-    attr_reader :job_data
     attr_reader :errors
     attr_reader :use_case
 
 
     def initialize(jenkins_job, logger)
       @jenkins_job = jenkins_job
-      @job_data    = nil
       @errors      = []
       @use_case    = self.class.name.split('::').last.underscore
 
@@ -68,40 +66,56 @@ module JenkinsJobs
       def job_status_updated?
         get_jenkins_job_details
         return false if job_data.nil?
-        update_job_status
       end
 
 
       def update_job_status
-        jenkins_job.state                 = color_to_state(job_data['color']) || jenkins_job.state
-        jenkins_job.state_color            = job_data['color'] || jenkins_job.state_color
-        jenkins_job.description           = job_data['description'] || ''
-        jenkins_job.health_report         = job_data['healthReport']
-        jenkins_job.latest_build_number   = !job_data['lastBuild'].nil? ? job_data['lastBuild']['number'] : 0
-        jenkins_job.latest_build_date     = jenkins_job.builds.last.finished_at rescue ''
-        jenkins_job.latest_build_duration = jenkins_job.builds.last.duration rescue ''
-        jenkins_job.sonarqube_dashboard_url = ''
-        jenkins_job.save!
-        jenkins_job.reload
-        true
+	      return update_all_job_info
       end
 
-      def do_create_builds(builds, update = false)
-	counter=0
-        builds.reverse.each do |build_data|
+      def do_create_builds()
+	      return update_all_job_info
+      end
 
-		if (counter < jenkins_job.builds_to_keep)
+      def update_all_job_info()
+
+	      job_data = get_jenkins_job_details
+
+	      if job_data.nil?
+                      return
+              end
+
+	      jenkins_job.state                 = color_to_state(job_data['color']) || jenkins_job.state
+              jenkins_job.state_color            = job_data['color'] || jenkins_job.state_color
+              jenkins_job.description           = job_data['description'] || ''
+              jenkins_job.health_report         = job_data['healthReport']
+              jenkins_job.latest_build_number   = !job_data['lastBuild'].nil? ? job_data['lastBuild']['number'] : 0
+              jenkins_job.latest_build_date     = jenkins_job.builds.last.finished_at rescue ''
+              jenkins_job.latest_build_duration = jenkins_job.builds.last.duration rescue ''
+              jenkins_job.sonarqube_dashboard_url = ''
+              jenkins_job.save!
+              jenkins_job.reload
+
+
+	      # job_data['builds'].reverse.take(jenkins_job.builds_to_keep)
+
+	      builds = job_data['builds'].sort_by{ |build_data| build_data['number'] }.reverse.take(jenkins_job.builds_to_keep)
+
+	      counter=0
+              builds.each do |build_data|
+
+	  	   if (counter < jenkins_job.builds_to_keep)
 			## Find Build in Redmine
 			jenkins_build = jenkins_job.builds.find_by_number(build_data['number'])
 
 			if jenkins_build.nil?
 				create_build(build_data['number'])
-			elsif !jenkins_build.nil? && update
+			else
 				update_build(jenkins_build, build_data['number'])
 			end
-		end
-		counter++
-	end
+		   end
+		   counter = counter + 1
+	      end
 
 	update_sonarqube_metrics_if_possible()
 
@@ -157,8 +171,6 @@ module JenkinsJobs
 
         ## Update SonarqubeDashboardUrl
         getSonarqubeDashboardUrl(build_details)
-
-        update_sonarqube_metrics_if_possible()
 
       end
 
@@ -434,7 +446,10 @@ module JenkinsJobs
       end
 
       def clean_up_builds
-        jenkins_job.builds.first(number_of_builds_to_delete).map(&:destroy) if too_much_builds?
+	      if too_much_builds?
+	            jenkins_job_builds = jenkins_job.builds.sort_by{ |build| build.number }.take(number_of_builds_to_delete)
+                    jenkins_job_builds.map(&:destroy)
+	      end
       end
 
 
@@ -461,14 +476,15 @@ module JenkinsJobs
 
 
       def get_jenkins_job_details
-        begin
-          data = jenkins_client.job.list_details(jenkins_job.name2url)
-	  @logger.info "get_jenkins_job_details('#{jenkins_job.name2url}'): data: '#{data}'"
-        rescue => e
-          @errors << e.message
-        else
-          @job_data = data
-        end
+	      data = nil
+              begin
+                   data = jenkins_client.job.list_details(jenkins_job.name2url)
+	           @logger.info "get_jenkins_job_details('#{jenkins_job.name2url}'): data: '#{data}'"
+              rescue => e
+                   @errors << e.message
+	           data = nil
+              end
+	      data
       end
 
 

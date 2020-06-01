@@ -2,11 +2,8 @@ module JenkinsJobs
   class UpdateLastBuild < Base
 
     def execute
-      return if !job_status_updated?
-
       begin
-        last_build = job_data['builds'].any? ? [job_data['builds'].first] : []
-        do_create_builds(last_build)
+        do_create_builds()
       rescue => e
         errorMsg = "UpdateLastBuild: " + e.message
         @errors << errorMsg
