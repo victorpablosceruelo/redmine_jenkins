@@ -6,7 +6,7 @@ module JenkinsJobs
 
       begin
         last_build = job_data['builds'].any? ? [job_data['builds'].first] : []
-        do_create_builds(last_build, true)
+        do_create_builds(last_build)
       rescue => e
         errorMsg = "UpdateLastBuild: " + e.message
         @errors << errorMsg

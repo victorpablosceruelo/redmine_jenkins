@@ -5,7 +5,7 @@ module JenkinsJobs
       return if !job_status_updated?
       
       begin
-      	do_create_builds(job_data['builds'].take(jenkins_job.builds_to_keep), true)
+      	do_create_builds(job_data['builds'].take(jenkins_job.builds_to_keep))
       rescue => e
 	errorMsg = "UpdateAllBuilds: " + e.message
         @errors << errorMsg

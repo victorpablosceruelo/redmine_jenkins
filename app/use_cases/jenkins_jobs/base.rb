@@ -87,16 +87,21 @@ module JenkinsJobs
       end
 
       def do_create_builds(builds, update = false)
+	counter=0
         builds.reverse.each do |build_data|
-          ## Find Build in Redmine
-          jenkins_build = jenkins_job.builds.find_by_number(build_data['number'])
 
-          if jenkins_build.nil?
-            create_build(build_data['number'])
-          elsif !jenkins_build.nil? && update
-            update_build(jenkins_build, build_data['number'])
-          end
-        end
+		if (counter < jenkins_job.builds_to_keep)
+			## Find Build in Redmine
+			jenkins_build = jenkins_job.builds.find_by_number(build_data['number'])
+
+			if jenkins_build.nil?
+				create_build(build_data['number'])
+			elsif !jenkins_build.nil? && update
+				update_build(jenkins_build, build_data['number'])
+			end
+		end
+		counter++
+	end
 
 	update_sonarqube_metrics_if_possible()
 
@@ -458,7 +463,7 @@ module JenkinsJobs
       def get_jenkins_job_details
         begin
           data = jenkins_client.job.list_details(jenkins_job.name2url)
-	  @logger.info "get_jenkins_job_details: data: '#{data}'"
+	  @logger.info "get_jenkins_job_details('#{jenkins_job.name2url}'): data: '#{data}'"
         rescue => e
           @errors << e.message
         else
@@ -470,7 +475,7 @@ module JenkinsJobs
       def get_jenkins_build_details(build_number)
         begin
           data = jenkins_client.job.get_build_details(jenkins_job.name2url, build_number)
-	  @logger.info "get_jenkins_build_details: data: '#{data}'"
+	  @logger.info "get_jenkins_build_details('#{build_number}'): data: '#{data}'"
 	  return data
         rescue => e
           @errors << e.message
