@@ -65,10 +65,15 @@ class JenkinsJob < ActiveRecord::Base
   end
 
 
-  def console
-    console_output =
+  def console(job_build_number)
+	  job_build_number = string_to_number(job_build_number)
+	  if (job_build_number <= 0)
+		  job_build_number = latest_build_number
+	  end
+
+    console_output = 
       begin
-        jenkins_connection.job.get_console_output(name2url, latest_build_number)['output'].gsub('\r\n', '<br />')
+        jenkins_connection.job.get_console_output(name2url, job_build_number)['output'].gsub('\r\n', '<br />')
       rescue => e
 
         errorMsg = "Jenkins Response: " + e.message
@@ -79,6 +84,21 @@ class JenkinsJob < ActiveRecord::Base
 
       end
     console_output
+  end
+
+  private
+
+  def string_to_number(input)
+	  if ((input == nil) || (input.empty?))
+		  return 0
+	  end
+
+	  Integer(input || '')
+
+  rescue ArgumentError
+
+	  0
+
   end
 
 end

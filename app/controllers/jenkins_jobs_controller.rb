@@ -6,6 +6,7 @@ class JenkinsJobsController < ApplicationController
 
   before_action :can_build_jenkins_jobs, only:   [:build]
   before_action :find_job,               except: [:index, :new, :create]
+  # before_action :find_build_by_number,   only:   [:console]
 
   layout Proc.new { |controller| controller.request.xhr? ? false : 'base' }
 
@@ -117,7 +118,10 @@ class JenkinsJobsController < ApplicationController
 
 
   def console
-    @console_output = @job.console
+	  job_build_number = params[:job_build_number]
+	  # logger.warn "console job_build_number: #{job_build_number}"
+	  # logger.warn "console id: #{@build.number}"
+          @console_output = @job.console(job_build_number)
   end
 
 
